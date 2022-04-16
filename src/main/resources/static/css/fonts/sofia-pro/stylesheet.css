@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'Sofia';
+    src: url('Sofia-Bold.eot');
+    src: local('Sofia Bold'), local('Sofia-Bold'),
+        url('Sofia-Bold.eot?#iefix') format('embedded-opentype'),
+        url('Sofia-Bold.woff') format('woff'),
+        url('Sofia-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sofia';
+    src: url('Sofia-Medium.eot');
+    src: local('Sofia Medium'), local('Sofia-Medium'),
+        url('Sofia-Medium.eot?#iefix') format('embedded-opentype'),
+        url('Sofia-Medium.woff') format('woff'),
+        url('Sofia-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}

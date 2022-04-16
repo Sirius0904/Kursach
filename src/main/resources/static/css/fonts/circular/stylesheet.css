@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Circular Std';
+    src: url('CircularStd-Medium.eot');
+    src: local('Circular Std Medium'), local('CircularStd-Medium'),
+        url('CircularStd-Medium.eot?#iefix') format('embedded-opentype'),
+        url('CircularStd-Medium.woff2') format('woff2'),
+        url('CircularStd-Medium.woff') format('woff'),
+        url('CircularStd-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}

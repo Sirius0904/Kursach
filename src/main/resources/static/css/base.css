@@ -1,0 +1,30 @@
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: 'Sofia', sans-serif;
+	color: #100873;
+	font-size: 15px;
+	line-height: 1;
+	background-color: #fafafafa;
+
+	display: flex;
+	column-gap: 37px;
+}
+
+/* Utility */
+.none {
+	display: none !important;
+}
+
+.visually-hidden {
+	opacity: 0;
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+	display: block;
+	margin-left: -10000px;
+	background: transparent;
+	font-size: 0;
+}
