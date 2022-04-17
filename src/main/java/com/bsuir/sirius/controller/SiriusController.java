@@ -17,7 +17,20 @@ public class SiriusController {
     }
 
     @GetMapping(value = "/profile")
-    public String getProfilePage(){
-        return "profile";
+    public String getProfilePage(){return "profile"; }
+
+    @GetMapping(value = "/pinkColl")
+    public String getFirstPage(){
+        return "pinkColl";
     }
+
+    @GetMapping(value = "/darkColl")
+    public String getSecondPage(){
+        return "darkColl";
+    }
+
+    @GetMapping(value = "/girlColl")
+    public String getThirdPage(){return "girlColl";}
+
 }
+

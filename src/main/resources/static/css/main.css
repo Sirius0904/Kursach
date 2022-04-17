@@ -109,7 +109,7 @@
 }
 
 .search-input:focus, .search-input:active {
-    background-color: #fff;
+    background-color: #D2DFEF;
 }
 
 .search-input::placeholder {
@@ -309,20 +309,64 @@
 }
 
 .card-section-title {
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: 750;
+    margin-bottom: 20px;
     text-decoration: none;
+    text-align: left;
+
 }
 
 .card-section-desc {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
+    text-align: left;
+
 }
 
 .card-section-red .card-section-title{
     color: #FD2E24;
 }
+
+.first-small-img img{
+    height: 92px;
+    margin: 10px 0;
+    cursor: pointer;
+    display: block;
+    opacity: .6;
+}
+.first-small-img img:hover {
+    opacity: 1;
+
+}
+
+.first-small-img{
+    float: left;
+
+}
+/* ничего не дало */
+.firs{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+}
+
+.img-container img {
+    height: 500px;
+
+}
+.img-container{
+    float: left;
+    padding: 10px;
+}
+.name-imag{
+    font-size: 19px;
+    font-weight: 750;
+    text-decoration: none;
+    text-align: center;
+}
+
 
 .container,
 .container-fluid,

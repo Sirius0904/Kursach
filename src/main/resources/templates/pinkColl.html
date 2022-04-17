@@ -55,7 +55,7 @@
             <nav class="nav-header">
                 <ul class="nav-header-list">
                     <li class="nav-header-link-text"><a th:href="@{/}">Art</a></li>
-                    <li class="nav-header-link-text"><a th:href="@{/collection}">Your Collections</a></li>
+                    <li class="nav-header-link-text active"><a th:href="@{/collection}">Your Collections</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Explore
@@ -77,14 +77,30 @@
 
     </header>
 
-    <div class="row">
 
-        КРУТОЙ ПРОФИЛЬ
+         <div class="first">
+             <div class="first-small-img">
+                 <img src="./../img/cards/group1/card-3.jpg" onclick="myFunction(this)">
+                 <img src="./../img/cards/group1/card-1.jpg" onclick="myFunction(this)">
+                 <img src="./../img/cards/group1/card-5.jpg" onclick="myFunction(this)">
+                 <img src="./../img/cards/group1/card-6.jpg" onclick="myFunction(this)">
+                 <img src="./../img/cards/group1/vector-1.jpg" onclick="myFunction(this)">
+             </div>
 
-    </div>
-
+             <div class="img-container">
+                 <img id="imageBox" src="./../img/cards/group1/card-1.jpg">
+             </div>
+             <h4 class="card-section-title">Neon city by Gasia</h4>
+             <p class="card-section-desc">This drop contains a series of neon photography that you can collect.
+                 Owning one of those works will allow users to have access to the end of year virtual exhibition.</p>
+         </div>
+        <script>
+            function myFunction(smallImg){
+                var fullImg = document.getElementById("imageBox");
+                fullImg.src = smallImg.src;
+            }
+        </script>
 
 </main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>
