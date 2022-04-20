@@ -102,6 +102,7 @@
     flex-grow: 1;
     background: none;
     border-radius: 15px;
+    cursor: pointer;
 
     font-size: 17px;
     font-weight: 500;
@@ -115,6 +116,80 @@
 .search-input::placeholder {
     color: rgba(0, 0, 0, 0.2);
 }
+
+
+/* window */
+
+.window{
+    width: 350px;
+    height: 530px;
+    margin: 40px auto;
+    background: brown;
+    border: 1px solid brown;
+    border-radius: 15px;
+    z-index: 150;
+    display: none;
+}
+.gray{
+    background-color: rgba(1,1,1,0.75);
+    position: fixed;
+    left:0;
+    top:0;
+    button:0;
+    display:none;
+    z-index: 100;
+
+
+}
+.form{
+    width: 275px;
+    margin: -15px auto 20px auto;
+    text-align: center;
+}
+.input {
+    width: 260px;
+    padding: 5px;
+    margin-bottom: 10px ;
+    flex-grow: 1;
+    background: none;
+    border-radius: 15px;
+    cursor: pointer;
+
+    font-size: 17px;
+    font-weight: 500;
+    font-family: 'Circular Std';
+}
+
+.input:focus, .input:active {
+    background-color: #CFD6E7;
+}
+
+.input::placeholder {
+    color: rgba(0, 0, 0, 0.2);
+}
+.radio{
+    margin: 10px;
+    cursor: pointer;
+    border: 1px solid #cccccc;
+    padding: 2px;
+
+
+}
+.close{
+    margin: 10px 0px 0px 320px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    padding: 2px;
+    background: #ccc;
+}
+
+.close:focus, .close:active {
+    background-color: #fff;
+}
+
+
+/* window */
+
 
 /* Nav header */
 
@@ -183,6 +258,162 @@
 .nav-header-link-icon + .nav-header-link-icon {
     margin-left: 25px;
 }
+
+
+
+
+
+
+
+.reg_button{
+    background: brown;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    padding: 6px 24px;
+    cursor: pointer;
+}
+
+.reg_button :hover{
+    background: #cccccc;
+}
+
+
+
+
+/* new home*/
+
+/* текст*/
+.home{
+    position: relative;
+    padding: 110px 0;
+    min-height: 895px;
+}
+
+.home-content{
+    max-width: 440px;
+}
+
+.home-heading{
+    color: #412C84;
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    font-size: 65px;
+}
+.home-heading + * {
+    margin-top: 20px;
+}
+
+.home-text{
+    color: #000000;
+    line-height: 144.5%;
+    max-width: 430px;
+}
+
+.home-text + * {
+    margin-top: 53px;
+}
+
+.home-btn{
+    display: flex;
+}
+
+.home-text {
+    color: #484848;
+    line-height: 144.5%;
+    max-width: 430px;
+}
+
+.home-text + * {
+    margin-top: 53px;
+}
+
+
+/* кнопка*/
+
+.home-btn {
+    display: flex;
+}
+
+.btn,a.btn {
+    display: inline-block;
+
+    min-height: 51px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+
+    padding-left: 50px;
+    padding-right: 50px;
+    background-color: #B8AFD4;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 400;
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.btn:hover,a.btn:hover {
+    opacity: 0.8;
+    color: #fff;
+}
+
+.btn-big,a.btn-big {
+    min-height: 65px;
+}
+
+@media (max-width: 991px) {
+    .btn,    a.btn {
+        min-height: 41px;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+    .btn-big,    a.btn-big {
+        min-height: 55px;
+    }
+}
+
+/* фотка*/
+
+.home-bg-img {
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(250, 241, 229);
+}
+
+.home-bg-img img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 991px) {
+    .home {
+        padding: 40px 0;
+        min-height: unset;
+    }
+    .home-heading {
+        font-size: 45px;
+        line-height: 1.2;
+    }
+    .home-text + * {
+        margin-top: 30px;
+    }
+    .home-bg-img img {
+        opacity: 0.3;
+    }
+}
+
+
+
+
+/* new */
+
+
 
 /* Cards wrapper */
 
@@ -344,6 +575,7 @@
     float: left;
 
 }
+
 /* ничего не дало */
 .firs{
     top: 50%;
@@ -367,6 +599,12 @@
     text-align: center;
 }
 
+.text_name{
+    font-size: 30px;
+    font-weight: 750;
+    text-decoration: none;
+    text-align: center;
+}
 
 .container,
 .container-fluid,
