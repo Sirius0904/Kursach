@@ -18,8 +18,6 @@ public class UserData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @OneToOne
-    private User user;
     private String email;
     private String firstName;
     private String lastName;

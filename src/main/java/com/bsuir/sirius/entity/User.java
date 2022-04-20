@@ -1,22 +1,38 @@
 package com.bsuir.sirius.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "USER")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Transient
+    transient private final boolean isActive = true;
+
     private String username;
+
     private String password;
-    @OneToOne(mappedBy = "user")
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @JoinTable(name = "user_role",
+            joinColumns = {
+                    @JoinColumn(name = "user_id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "role_id")})
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToOne
     private UserData userData;
 }
+

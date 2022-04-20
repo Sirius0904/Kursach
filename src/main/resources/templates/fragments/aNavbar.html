@@ -1,0 +1,33 @@
+<header class="header container">
+    <div class="logo">
+        <img src="./../img/logo.svg" alt="Caped logo"/>
+    </div>
+    <!-- header-search -->
+    <div class="header-search">
+        <form class="search">
+            <label class="search-label">
+                <img class="search-icon" src="./../img/icons/search.svg" alt="Search"/>
+                <input class="search-input" type="text" placeholder="Search store"/>
+            </label>
+        </form>
+    </div>
+    <!-- // header-search  -->
+
+    <!-- header-links -->
+    <div class="header-links">
+        <nav class="nav-header">
+            <ul class="nav-header-list">
+                <li class="nav-header-link-text"><a th:href="@{/}">Art</a></li>
+                <li class="nav-header-link-text"><a th:href="@{/collection}">Collections</a></li>
+                <li class="nav-header-link-text"><a th:href="@{/myimages}">My images</a>
+                <li class="nav-header-link-text">
+                    <a th:href="@{/profile}"><strong>Profile</strong></a>
+                </li>
+                <li class="nav-header-link-text">
+                    <a th:href="@{/logout}">Log Out</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- // header-links -->
+</header>

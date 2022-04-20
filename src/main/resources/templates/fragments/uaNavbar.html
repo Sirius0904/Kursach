@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action='/log_in' id="myform">
+                    <div class="mb-1">
+                        <label for="email" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="email" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="login_password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" id="login_password"
+                                   required>
+                            <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                                    onclick=showLoginPassword("login_password")>
+                                @
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-1 form-check">
+                        <input type="checkbox" class="form-check-input" name="remember-me" id="remember" checked>
+                        <label class="form-check-label" for="remember">Remember Me</label>
+                    </div>
+                    <div class="row" style="padding-left: 2%">
+                        <button class="btn col-lg-5" style="background-color: #B8AFD4; color: #fff;">Submit</button>
+                        <a th:href="@{/registration}" class="btn offset-2 col-lg-4" style="">Create account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<header class="header container">
+    <div class="logo">
+        <img src="./../img/logo.svg" alt="Caped logo"/>
+    </div>
+    <!-- header-search -->
+    <div class="header-search">
+        <form class="search">
+            <label class="search-label">
+                <img class="search-icon" src="./../img/icons/search.svg" alt="Search"/>
+                <input class="search-input" type="text" placeholder="Search store"/>
+            </label>
+        </form>
+    </div>
+    <!-- // header-search  -->
+
+    <!-- header-links -->
+    <div class="header-links">
+        <nav class="nav-header">
+            <ul class="nav-header-list">
+                <li class="nav-header-link-text"><a th:href="@{/}">Art</a></li>
+                <li class="nav-header-link-text"><a th:href="@{/collection}">Collections</a></li>
+                <li class="nav-header-link-text"><a th:href="@{/collection}">About us</a>
+                <li class="nav-header-link-text">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#loginModal"><strong>Sign
+                        in</strong></button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- // header-links -->
+</header>
