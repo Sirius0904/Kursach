@@ -22,6 +22,12 @@ public class UserData {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String city;
+    private String country;
+    private String cardNumber;
+    private String cardCvv;
+    private String cardholderName;
+    private String cardExpirationTime;
     private BigDecimal balance;
     @OneToMany
     private Set<Image> images = new HashSet<>();

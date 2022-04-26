@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <title>Sirius</title>
@@ -31,86 +31,114 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <meta name="theme-color" content="#ffffff"/>
+    <style>
+        /* Регистрация */
+        .register-body {
+            padding-top: 100px;
+            background: #C8E4F2;
+            margin: 0;
+            background: url("../../img/back.png");
+            width: 100%;
+            height: 100%;
+        }
+
+        .register-h1 {
+            margin: 0;
+            text-transform: uppercase;
+            padding-bottom: 5px;
+            border-bottom: 3px solid #5200a5;
+        }
+
+        .register-form {
+            margin: 0 auto;
+            background: rgba(103, 213, 228, 0.77);
+            width: 450px;
+            height: 500px;
+            padding: 20px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.82);
+        }
+
+        .group {
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .register-label {
+            padding-left: 10px;
+            text-transform: uppercase;
+
+        }
+
+        .register-field {
+            height: 40px;
+            width: 400px;
+            border-radius: 20px/20px;
+            border: none;
+            padding-left: 15px;
+            font-size: 18px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.82);
+            cursor: pointer;
+        }
+
+        .register-field:focus {
+            border: 2px solid #6c00ff;
+            transform: translateX(15px);
+            width: 385px;
+        }
+
+        .register-button {
+            cursor: pointer;
+            padding: 10px 30px;
+            height: 50px;
+            color: #fff;
+            background: #5200a5;
+            border: none;
+            text-transform: uppercase;
+            font-size: 15px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.82);
+            cursor: pointer;
+        }
+
+        .register-button:hover {
+            opacity: .80;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        /* Регистрация */
+
+    </style>
 </head>
 <body>
-<!-- DISABLE IF AUTHORISED -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">Login</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+<main class="main container-fluid">
+    <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
+    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated()"></div>
+
+    <div class="register-body">
+        <form class="register-form" th:action="@{/register}" th:object="${registrationTo}" method="post">
+            <h1 class="register-h1" title="Site registration form"> Registration </h1>
+            <div class="group">
+                <label class="register-label" for="username_input">User Name:</label>
+                <input class="register-field" th:field="*{username}" id="username_input" type="text">
             </div>
-            <div class="modal-body">
-                <form method="post" action='/log_in' id="myform">
-                    <div class="mb-1">
-                        <label for="email" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="email" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="login_password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <input type="password" name="password" class="form-control" id="login_password"
-                                   required>
-                            <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-                                    onclick=showLoginPassword("login_password")>
-                                @
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mb-1 form-check">
-                        <input type="checkbox" class="form-check-input" name="remember-me" id="remember" checked>
-                        <label class="form-check-label" for="remember">Remember Me</label>
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </form>
+            <div class="group">
+                <label class="register-label" for="password_input">Password:</label>
+                <input class="register-field" th:field="*{password}" id="password_input" type="password">
             </div>
-        </div>
+            <div class="group">
+                <label class="register-label" for="password_confirm_input">Repeat Password:</label>
+                <input class="register-field" th:field="*{confirmation}" id="password_confirm_input" type="password">
+            </div>
+            <div class="group">
+                <label class="register-label" for="email_input"> E-mail:</label>
+                <input class="register-field" th:field="*{email}" id="email_input" type="email">
+            </div>
+            <div class="group">
+                <button class="register-button">Sing in</button>
+            </div>
+        </form>
     </div>
-</div>
-<!------------------------------------------------------------------------------------------------------------------------->
-<main class="main container">
-    <header class="header">
-        <div class="logo">
-            <img src="./../img/logo.svg" alt="Caped logo"/>
-        </div>
-        <!-- header-search -->
-        <div class="header-search">
-            <form class="search">
-                <label class="search-label">
-                    <img class="search-icon" src="./../img/icons/search.svg" alt="Search"/>
-                    <input class="search-input" type="text" placeholder="Search store"/>
-                </label>
-            </form>
-        </div>
-        <!-- // header-search  -->
-
-        <!-- header-links -->
-        <div class="header-links">
-            <nav class="nav-header">
-                <ul class="nav-header-list">
-                    <li class="nav-header-link-text active"><a th:href="@{/}">Art</a></li>
-                    <li class="nav-header-link-text"><a th:href="@{/collection}">Collections</a></li>
-                    <li class="nav-header-link-text"><a th:href="@{/collection}">About us</a></li>
-                    <li class="nav-header-link-text">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#loginModal"><strong>Sign
-                            in</strong></button>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <form action="#" th:action="@{/register}" th:object="${registrationTo}" method="post">
-        <p>Id: <input type="text" th:field="*{username}" /></p>
-        <p>Password: <input type="password" th:field="*{password}" /></p>
-        <p>Confirmation: <input type="text" th:field="*{confirmation}" /></p>
-        <p>Confirmation: <input type="email" th:field="*{email}" /></p>
-        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-    </form>
-
-
 </main>
 <script>
     function showLoginPassword(id) {

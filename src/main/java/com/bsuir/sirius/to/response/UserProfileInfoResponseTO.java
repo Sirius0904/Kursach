@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoResponseTO {
+public class UserProfileInfoResponseTO {
     private String username;
     private String email;
-    private String firstName;
-    private String lastName;
+    private String fio;
+    private String place;
+
 }

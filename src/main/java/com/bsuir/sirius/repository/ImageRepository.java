@@ -1,4 +1,4 @@
-package com.bsuir.sirius.dao;
+package com.bsuir.sirius.repository;
 
 import com.bsuir.sirius.entity.Image;
 import org.springframework.data.jpa.repository.JpaRepository;

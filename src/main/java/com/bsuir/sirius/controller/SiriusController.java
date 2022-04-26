@@ -1,6 +1,7 @@
 package com.bsuir.sirius.controller;
 
 import com.bsuir.sirius.service.UserService;
+import com.bsuir.sirius.to.request.EditProfileUserDataTO;
 import com.bsuir.sirius.to.request.RegisterUserRequestTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -59,6 +60,19 @@ public class SiriusController {
     public String registerUser(@ModelAttribute RegisterUserRequestTO registerUserTO) throws Exception { //todo create custom validation
         userService.registerUser(registerUserTO);
         return "redirect:/";
+    }
+
+    @GetMapping(value = "/profile/edit")
+    public String getProfileEditPage(Model model, Principal principal) {
+        model.addAttribute("profileData", userService.getProfileData(principal.getName()));
+        model.addAttribute("newProfileData", new EditProfileUserDataTO());
+        return "profile-edit";
+    }
+
+    @PostMapping(value = "/profile/edit/save")
+    public String setNewInfo(@ModelAttribute("newProfileData") EditProfileUserDataTO editProfileUserDataTO, Principal principal) {
+        userService.setUserData(editProfileUserDataTO, principal.getName());
+        return "redirect:/profile";
     }
 }
 
