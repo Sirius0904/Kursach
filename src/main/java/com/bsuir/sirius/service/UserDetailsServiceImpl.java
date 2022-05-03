@@ -1,8 +1,8 @@
 package com.bsuir.sirius.service;
 
-import com.bsuir.sirius.repository.UserRepository;
 import com.bsuir.sirius.entity.Role;
 import com.bsuir.sirius.entity.User;
+import com.bsuir.sirius.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -12,5 +12,5 @@ public class UserProfileInfoResponseTO {
     private String email;
     private String fio;
     private String place;
-
+    private String profileImage;
 }

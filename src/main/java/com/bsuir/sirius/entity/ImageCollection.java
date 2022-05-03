@@ -18,7 +18,6 @@ public class ImageCollection {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String collectionName;
-    private String theme;
 
     @OneToMany(targetEntity = Image.class)
     private Set<Image> images = new HashSet<>();

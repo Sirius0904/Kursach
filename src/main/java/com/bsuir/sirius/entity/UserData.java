@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,15 +23,27 @@ public class UserData {
     private String phoneNumber;
     private String city;
     private String country;
-    private String cardNumber;
-    private String cardCvv;
-    private String cardholderName;
-    private String cardExpirationTime;
-    private BigDecimal balance;
-    @OneToMany
+
+    @OneToOne
+    @JoinColumn(name = "wallet")
+    private Wallet wallet;
+
+    @OneToMany(mappedBy = "owner")
     private Set<Image> images = new HashSet<>();
+
+    @OneToOne
+    private ImageData profileImage;
+
     @OneToMany(mappedBy = "owner")
     private Set<ImageCollection> collections = new HashSet<>();
+
+    @OneToMany
+    private Set<Image> likedImages = new HashSet<>();
+
+    @OneToMany
+    private Set<ImageCollection> likedCollections = new HashSet<>();
+
     @OneToMany
     private Set<TransactionHistory> transactions = new HashSet<>();
 }
+/*th:src="/@{${user.photosImagePath}}"*/

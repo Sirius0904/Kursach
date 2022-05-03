@@ -7,7 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ImageDataRepository extends JpaRepository<ImageData, Integer> {
-    List<ImageData> findAllByImageImageName(String imageName);
-    List<ImageData> findAllByOwnerUsername(String username);
+public interface ImageDataRepository extends JpaRepository<ImageData, String> {
 }

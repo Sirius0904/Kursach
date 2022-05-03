@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
@@ -14,9 +15,20 @@ import javax.persistence.*;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Long id;
     private String imageName;
-    @OneToOne(mappedBy = "image")
+
+    @ManyToOne
+    private UserData owner;
+
+    private Boolean isSellable = false;
+
+    private BigDecimal price;
+
+    private Integer likeCount;
+
+    private String description;
+
+    @OneToOne
     private ImageData imageData;
-    private byte[] imageBytes;
 }

@@ -1,6 +1,9 @@
 package com.bsuir.sirius.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,7 +24,6 @@ public class User {
     transient private final boolean isActive = true;
 
     private String username;
-
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})

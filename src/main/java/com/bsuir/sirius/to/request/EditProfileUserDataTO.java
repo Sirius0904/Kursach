@@ -15,8 +15,5 @@ public class EditProfileUserDataTO {
     private String email;
     private String city;
     private String country;
-    private String cardNumber;
-    private String cvv;
-    private String expirationDate;
-    private String cardholderName;
+    private String profileImage;
 }

@@ -59,31 +59,43 @@
                 <div class="px-4 pt-0 pb-4 cover">
                     <div class="media align-items-end profile-head">
                         <div class="row">
-                            <div class="profile mr-3 col-lg-3"><img
-                                    src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
-                                    alt="..." width="130" class="rounded mb-2 img-thumbnail"></div>
-                            <div class="media-body mb-5 text-white col-lg-3 pt-5">
-                                <h4 class="mt-0 mb-0" th:text="${profileData.username}"></h4>
-                                <p class="small mb-4"><i class="fas fa-map-marker-alt mr-2"></i>New York</p>
-                            </div>
+                            <form th:action="@{/profile/image/update}" class="profile mr-3 col-lg-3" method="post"  enctype="multipart/form-data">
+                                <label for="file" style="cursor: pointer;">
+                                    <img
+                                            th:src="${profileData.profileImage ?: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80'}"
+                                            alt="..." width="130" height="130"
+                                            style="width: 130px; height: 130px; object-fit: cover;"
+                                            id="output"
+                                            class="rounded mb-2 img-thumbnail">
+                                </label>
+                                <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)"
+                                       style="display: none;">
+
+                                <button type="submit" class="btn btn-outline-dark btn-sm btn-block">Update profile
+                                    image
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
                 <div class="px-4 py-3 mt-4">
                     <div class="p-4 rounded shadow-sm bg-light">
                         <h4 class="mb-3">Base info</h4>
-                        <form class="needs-validation" novalidate="" th:action="@{/profile/edit/save}" th:object="${newProfileData}" method="post">
+                        <form class="needs-validation" novalidate="" th:action="@{/profile/edit/save}"
+                              th:object="${newProfileData}" method="post">
                             <div class="row g-3">
                                 <div class="col-sm-6">
                                     <label for="firstName" class="form-label">First name</label>
-                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}" th:placeholder="${profileData.firstName ?: 'First Name'}"
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                                           th:placeholder="${profileData.firstName ?: 'First Name'}"
                                            value=""
                                            required="">
                                 </div>
 
                                 <div class="col-sm-6">
                                     <label for="lastName" class="form-label">Last name</label>
-                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}" th:placeholder="${profileData.lastName ?: 'Last Name'}"
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                                           th:placeholder="${profileData.lastName ?: 'Last Name'}"
                                            value=""
                                            required="">
                                 </div>
@@ -92,14 +104,16 @@
                                     <label for="username" class="form-label">Username</label>
                                     <div class="input-group has-validation">
                                         <span class="input-group-text">@</span>
-                                        <input type="text" class="form-control" id="username" th:placeholder="${profileData.username ?: 'Username'}"
+                                        <input type="text" class="form-control" id="username"
+                                               th:placeholder="${profileData.username ?: 'Username'}"
                                                disabled>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
                                     <label for="email" class="form-label">E-Mail</label>
-                                    <input type="email" class="form-control" id="email" th:field="*{email}" th:placeholder="${profileData.email ?: 'E-Mail'}" value=""
+                                    <input type="email" class="form-control" id="email" th:field="*{email}"
+                                           th:placeholder="${profileData.email ?: 'E-Mail'}" value=""
                                            required="">
                                 </div>
 
@@ -166,6 +180,12 @@
     </div>
 
 </main>
+<script>
+    var loadFile = function (event) {
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+</script>
 </body>
 
 </html>
