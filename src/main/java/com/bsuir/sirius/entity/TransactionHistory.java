@@ -1,13 +1,13 @@
 package com.bsuir.sirius.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -25,4 +25,5 @@ public class TransactionHistory {
     @ManyToOne
     private Image image;
     private LocalDateTime transactionTime;
+    private BigDecimal amount;
 }

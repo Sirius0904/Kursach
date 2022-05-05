@@ -1,12 +1,12 @@
 package com.bsuir.sirius.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.bsuir.sirius.enumeration.ImageType;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -18,4 +18,5 @@ public class ImageData {
     private String path;
     private Integer height;
     private Integer width;
+    private ImageType imageType;
 }

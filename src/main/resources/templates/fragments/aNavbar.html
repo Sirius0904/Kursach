@@ -1,12 +1,12 @@
 <header class="header container">
     <div class="logo">
-        <img src="./../img/logo.svg" alt="Caped logo"/>
+        <img th:src="@{/img/logo.svg}" alt="Caped logo"/>
     </div>
     <!-- header-search -->
     <div class="header-search">
         <form class="search">
             <label class="search-label">
-                <img class="search-icon" src="./../img/icons/search.svg" alt="Search"/>
+                <img class="search-icon" th:src="@{/img/icons/search.svg}" alt="Search"/>
                 <input class="search-input" type="text" placeholder="Search store"/>
             </label>
         </form>
@@ -17,26 +17,25 @@
         <ul class="nav-header-list">
             <li class="nav-header-link-text"><a th:href="@{/}">Art</a></li>
             <li class="nav-header-link-text"><a th:href="@{/collection}">Collections</a></li>
-            <li class="nav-header-link-text"><a th:href="@{/myimages}">My images</a>
+            <li class="nav-header-link-text"><a th:href="@{/my/images}">My images</a>
             <li class="nav-item dropdown" style="padding-left: 20px">
                 <a class="nav-link nav-header-link-text" href="#" style="content: none; color: black" id="navbarDropdown"
-                   role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false">
-                    5.0ERC
+                   aria-expanded="false" th:text="${wallet.balance} + ${wallet.currency}">
+
                 </a>
                 <ul class="dropdown-menu" style="border: 0px; color: black;" aria-labelledby="navbarDropdown">
-                    <li class="nav-header-link-text-custom"><a class="dropdown-item" href="#">Deposit</a></li>
-                    <li class="nav-header-link-text-custom"><a class="dropdown-item" href="#">Withdraw</a></li>
+                    <li class="nav-header-link-text-custom"><a class="dropdown-item" th:href="@{/my/wallet/deposit}">Deposit</a></li>
+                    <li class="nav-header-link-text-custom"><a class="dropdown-item" th:href="@{/my/wallet/withdraw}">Withdraw</a></li>
                     <li class="nav-header-link-text-custom"><a class="dropdown-item" href="#">History</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown" style="padding-left: 15px; ">
                 <a class="nav-link nav-header-link-text" href="#" style="content: none; color: black;"
-                   id="navbarDropdown1" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false">
-                    <strong>Username))</strong>
+                   id="navbarDropdown1"
+                   aria-expanded="false" th:href="@{/profile}">
+                    <strong th:text="${username ?: 'user'}"/>
                 </a>
-                <ul class="dropdown-menu" style="border: 0px; color: black; " aria-labelledby="navbarDropdown">
+                <ul class="dropdown-menu" style="border: 0px; color: black;" aria-labelledby="navbarDropdown">
                     <li class="nav-header-link-text-custom"><a  th:href="@{/profile}"  class="dropdown-item" href="#">Profile</a>
                     </li>
                     <li class="nav-header-link-text-custom"><a th:href="@{/logout}" class="dropdown-item" href="#">Log Out</a>

@@ -1,13 +1,17 @@
 package com.bsuir.sirius.service;
 
 import com.bsuir.sirius.entity.*;
+import com.bsuir.sirius.enumeration.ImageType;
 import com.bsuir.sirius.repository.*;
 import com.bsuir.sirius.to.request.EditProfileUserDataTO;
+import com.bsuir.sirius.to.request.NewImageRequestTO;
 import com.bsuir.sirius.to.request.RegisterUserRequestTO;
+import com.bsuir.sirius.to.response.DisplayImageTO;
 import com.bsuir.sirius.to.response.UserProfileInfoResponseTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +37,13 @@ public class UserService {
     private final ImageRepository imageRepository;
     private final ImageCollectionRepository collectionRepository;
     private final ImageDataRepository imageDataRepository;
+    private final WalletRepository walletRepository;
+    private final TransactionHistoryRepository transactionHistoryRepository;
+
+
+    public User getCurrentUser(String username){
+        return userRepository.getUserByUsername(username);
+    }
 
     public void registerUser(RegisterUserRequestTO request) throws Exception {
         if (userRepository.getUserByUsername(request.getUsername()) != null) {
@@ -49,6 +59,10 @@ public class UserService {
         user.setUsername(request.getUsername());
         UserData userData = new UserData();
         userData.setEmail(request.getEmail());
+        Wallet wallet = new Wallet();
+        wallet.setId(UUID.randomUUID().toString());
+        walletRepository.saveAndFlush(wallet);
+        userData.setWallet(wallet);
         userDataRepository.saveAndFlush(userData);
         user.setPassword(encoder.encode(request.getPassword()));
         user.setUserData(userData);
@@ -95,7 +109,9 @@ public class UserService {
             response.setLastName(user.getUserData().getLastName());
             response.setPhoneNumber(user.getUserData().getPhoneNumber());
             response.setEmail(user.getUserData().getEmail());
-            response.setProfileImage("\\" + user.getUserData().getProfileImage().getPath());
+            if(user.getUserData().getProfileImage() != null){
+                response.setProfileImage("\\" + user.getUserData().getProfileImage().getPath());
+            }
         }
         response.setUsername(user.getUsername());
         return response;
@@ -143,8 +159,12 @@ public class UserService {
 
     }
 
-    public void uploadImage(String type, MultipartFile file, String username) throws IOException {
-        if (file == null) {
+    public void uploadImage(MultipartFile file, String username) throws IOException {
+        System.out.println(file.getContentType());
+        if (file.isEmpty()) {
+            return;
+        }
+        if(!file.getContentType().equals("image/jpeg") && !file.getContentType().equals("image/png")){
             return;
         }
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -153,7 +173,7 @@ public class UserService {
         ImageData imageData = new ImageData();
 
         Image image = new Image();
-        image.setImageName("New Image");
+        image.setImageName("profile_image");
         image.setOwner(userRepository.getUserByUsername(username).getUserData());
         Path uploadPath = Paths.get(uploadDir);
 
@@ -165,6 +185,7 @@ public class UserService {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
             imageData.setPath(filePath.toString());
+            imageData.setImageType(ImageType.PROFILE);
             imageDataRepository.saveAndFlush(imageData);
             image.setImageData(imageData);
             imageRepository.saveAndFlush(image);
@@ -175,6 +196,75 @@ public class UserService {
             throw new IOException("Could not save image file: " + fileName, ioe);
         }
 
+    }
+
+    public void uploadNewImage(NewImageRequestTO request, String username) throws IOException {
+        if (request == null || request.getImage().isEmpty()) {
+            return;
+        }
+        if(!request.getImage().getContentType().equals("image/jpeg") && !request.getImage().getContentType().equals("image/png")){
+            return;
+        }
+        String fileName = StringUtils.cleanPath(request.getImage().getOriginalFilename());
+        User user = userRepository.getUserByUsername(username);
+        String uploadDir = "user-photos/" + user.getId();
+
+        ImageData imageData = new ImageData();
+
+        Image image = new Image();
+        image.setImageName(request.getName());
+        image.setDescription(request.getDescription());
+        image.setOwner(user.getUserData());
+        image.setIsSellable(request.getStatus().getValue());
+        image.setPrice(request.getPrice());
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        try (InputStream inputStream = request.getImage().getInputStream()) {
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            imageData.setPath(filePath.toString());
+            imageData.setImageType(ImageType.PUBLIC);
+            imageDataRepository.saveAndFlush(imageData);
+            image.setImageData(imageData);
+            imageRepository.saveAndFlush(image);
+        } catch (IOException ioe) {
+            throw new IOException("Could not save image file: " + fileName, ioe);
+        }
+    }
+
+    public List<DisplayImageTO> getImages(String username) {
+        List<DisplayImageTO> images = new ArrayList<>();
+        if (username == null) {
+            imageRepository.findAll().stream().filter(e -> e.getImageData().getImageType().equals(ImageType.PUBLIC)).forEach(image -> {
+                images.add(new DisplayImageTO(
+                        "\\" + image.getImageData().getPath(),
+                        image.getImageName(),
+                        "\\" + image.getOwner().getProfileImage().getPath(),
+                        image.getDescription(),
+                        image.getOwner().getFirstName() + image.getOwner().getLastName(),
+                        image.getLikeCount(),
+                        image.getPrice(),
+                        image.getIsSellable()
+                ));
+            });
+        } else {
+            User user = userRepository.getUserByUsername(username);
+            user.getUserData().getImages().stream().filter(e -> e.getImageData().getImageType().equals(ImageType.PUBLIC)).forEach(image -> {
+                images.add(new DisplayImageTO(
+                        "\\" + image.getImageData().getPath(),
+                        image.getImageName(),
+                        "\\" + user.getUserData().getProfileImage().getPath(),
+                        image.getDescription(),
+                        user.getUsername(),
+                        image.getLikeCount(),
+                        image.getPrice(),
+                        image.getIsSellable()
+                ));
+            });
+        }
+        return images;
     }
 
     public void like(String type, String id, String username) {
@@ -205,8 +295,27 @@ public class UserService {
 
     }
 
-    public void topUp(String username, BigDecimal amount) {
-
+    @Transactional
+    public void walletAction(String type, String username, BigDecimal amount) {
+        User user = userRepository.getUserByUsername(username);
+        TransactionHistory transaction = new TransactionHistory();
+        transaction.setTransactionTime(LocalDateTime.now());
+        Wallet wallet = user.getUserData().getWallet();
+        switch (type){
+            case "deposit":
+                transaction.setBuyer(user.getUserData());
+                transaction.setAmount(amount);
+                wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
+                walletRepository.saveAndFlush(wallet);
+                transactionHistoryRepository.saveAndFlush(transaction);
+                break;
+            case "withdraw":
+                transaction.setSeller(user.getUserData());
+                transaction.setAmount(amount.multiply(BigDecimal.valueOf(-1)));
+                wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
+                walletRepository.saveAndFlush(wallet);
+                transactionHistoryRepository.saveAndFlush(transaction);
+        }
     }
 
 }
