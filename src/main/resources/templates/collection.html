@@ -36,7 +36,8 @@
 
 <main class="main container">
     <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
-    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated()"></div>
+    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('USER')"></div>
+    <div th:insert="~{fragments/adminNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')"></div>
 
     <div class="row">
 

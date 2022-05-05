@@ -2,6 +2,7 @@ package com.bsuir.sirius.entity;
 
 import com.bsuir.sirius.enumeration.ImageType;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "IMAGE_DATA")
+@Accessors(chain = true)
 public class ImageData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

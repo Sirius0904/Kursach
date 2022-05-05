@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class DisplayImageTO {
+    private String id;
     private String path;
     private String name;
     private String authorImagePath;
@@ -20,4 +21,5 @@ public class DisplayImageTO {
     private Integer likes;
     private BigDecimal price;
     private Boolean isSellable;
+    private Boolean isOwner;
 }

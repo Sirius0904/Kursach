@@ -1,20 +1,28 @@
 package com.bsuir.sirius.controller;
 
 import com.bsuir.sirius.service.UserService;
+import com.bsuir.sirius.to.request.EditImageParametersRequestTO;
 import com.bsuir.sirius.to.request.EditProfileUserDataTO;
 import com.bsuir.sirius.to.request.NewImageRequestTO;
 import com.bsuir.sirius.to.request.RegisterUserRequestTO;
+import com.bsuir.sirius.to.response.DisplayImageTO;
+import com.bsuir.sirius.to.response.PurchaseStatusTO;
+import com.bsuir.sirius.to.response.UserTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -91,9 +99,12 @@ public class SiriusController {
     }
 
     @PostMapping(value = "/my/images/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String uploadMyImage(@ModelAttribute NewImageRequestTO newImageRequest, Principal principal) throws IOException {
-        userService.uploadNewImage(newImageRequest, principal.getName());
-        return "index";
+    public String uploadMyImage(@ModelAttribute NewImageRequestTO newImageRequest, Principal principal, Model model) throws IOException {
+        if (newImageRequest == null) {
+            return "redirect:/my/images";
+        }
+        model.addAttribute("image", userService.uploadNewImage(newImageRequest, principal.getName()));
+        return "uploadConfirmed";
     }
 
     @GetMapping("my/images/new")
@@ -103,25 +114,90 @@ public class SiriusController {
     }
 
     @GetMapping("my/wallet")
-    public String getMyWallet(){
+    public String getMyWallet(Model model, Principal principal) {
+        model.addAttribute("transactions", userService.getLastTransactions(principal.getName()));
+        model.addAttribute("transactionCountTotal", userService.getTransactionCount(principal.getName()));
         return "myWallet";
     }
 
     @GetMapping("my/wallet/deposit")
-    public String depositMyWallet(){
+    public String depositMyWallet() {
         return "deposit";
     }
 
     @GetMapping("my/wallet/withdraw")
-    public String withdrawMyWallet(){
+    public String withdrawMyWallet() {
         return "withdraw";
     }
 
     @PostMapping("/service/wallet/{type}")
-    public String walletActions(Principal principal, @PathVariable String type, @RequestParam BigDecimal amount){
+    public String walletActions(Principal principal, @PathVariable String type, @RequestParam BigDecimal amount) {
         userService.walletAction(type, principal.getName(), amount);
         return "redirect:/my/wallet";
     }
 
+    @GetMapping("/gallery/image/{id}")
+    public String getImageDetailedInfo(@PathVariable Integer id, Model model, Principal principal) {
+        DisplayImageTO image = userService.getImageById(id, principal.getName());
+        model.addAttribute("image", image);
+        model.addAttribute("userData", userService.getUserInfo(image.getAuthor()));
+        return "imageDetail";
+    }
+
+
+    @GetMapping("/gallery/store/buy/{id}")
+    public String getBuyImagePage(@PathVariable Integer id, Model model, Principal principal) {
+        model.addAttribute("image", userService.getImageById(id, principal.getName()));
+        model.addAttribute("product", userService.getImageById(id, principal.getName()));
+        return "buyImagePage";
+    }
+
+    @PostMapping("/gallery/store/buy")
+    public RedirectView buyImage(@ModelAttribute("product") DisplayImageTO image, Principal principal, RedirectAttributes attributes) {
+        System.out.println(image.toString());
+        attributes.addFlashAttribute("status", userService.buyImage(image.getId(), principal.getName()));
+        attributes.addFlashAttribute("image", image);
+        return new RedirectView("/gallery/store/total");
+    }
+
+    @GetMapping("/gallery/store/total")
+    public ModelAndView purchaseSuccessful(@ModelAttribute("status") PurchaseStatusTO status, @ModelAttribute("image") DisplayImageTO image, ModelMap model) {
+        System.out.println(status.toString());
+        System.out.println(image.toString());
+        model.addAttribute("status", status);
+        model.addAttribute("image", image);
+        return new ModelAndView("purchaseSuccessful", model);
+    }
+
+    @GetMapping("/gallery")
+    public String getGallery(Model model) {
+        model.addAttribute("images", userService.getImages(null));
+        return "gallery";
+    }
+
+    @GetMapping("/image/edit/{id}")
+    public String editImage(Model model, @PathVariable Integer id, Principal principal) {
+        model.addAttribute("editImage", new EditImageParametersRequestTO());
+        System.out.println(userService.getImageById(id, principal.getName()).toString());
+        model.addAttribute("image", userService.getImageById(id, principal.getName()));
+        return "editImagePage";
+    }
+
+    @PostMapping("/image/edit")
+    public String saveEditedImage(@ModelAttribute("editImage") EditImageParametersRequestTO newImage, @ModelAttribute("image") DisplayImageTO image) {
+        System.out.println(image.toString());
+        userService.changeImageParams(newImage);
+        return "redirect:/gallery/image/" + newImage.getId();
+    }
+
+    @GetMapping("/admin/users")
+    public String getAllUsers(Model model, Principal principal) {
+        List<UserTO> allUsers = userService.getAllUsers(principal.getName());
+        if (allUsers == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("users", allUsers);
+        return "adminTable";
+    }
 }
 

@@ -36,13 +36,14 @@
 
 <main class="main container">
     <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
-    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated()"></div>
+    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('USER')"></div>
+    <div th:insert="~{fragments/adminNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')"></div>
 
     <form action="#" th:action="@{/my/images/upload}" th:object="${newImageRequest}" method="post"
           enctype="multipart/form-data" >
         <p>Name: <input type="text" th:field="*{name}"/></p>
         <p>Description: <input type="text" th:field="*{description}"/></p>
-        <p>Price: <input type="number" step="0.0001"></p>
+        <p>Price: <input type="number" th:field="*{price}" step="0.0001"></p>
         <p>Sellable?:
             <select th:field="*{status}">
                 <option value="YES">da</option>

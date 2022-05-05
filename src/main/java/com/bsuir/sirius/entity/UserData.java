@@ -33,16 +33,12 @@ public class UserData {
     @OneToOne
     private ImageData profileImage;
 
-    @OneToMany(mappedBy = "owner")
-    private Set<ImageCollection> collections = new HashSet<>();
-
     @OneToMany
     private Set<Image> likedImages = new HashSet<>();
 
-    @OneToMany
-    private Set<ImageCollection> likedCollections = new HashSet<>();
+    @OneToOne(mappedBy = "userData")
+    private User baseUser;
 
     @OneToMany
     private Set<TransactionHistory> transactions = new HashSet<>();
 }
-/*th:src="/@{${user.photosImagePath}}"*/

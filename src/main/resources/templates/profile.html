@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Sirius</title>
@@ -57,7 +57,9 @@
 </head>
 <body>
 <main class="main">
-    <div th:insert="~{fragments/aNavbar.html}"></div>
+    <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
+    <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('USER')"></div>
+    <div th:insert="~{fragments/adminNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')"></div>
     <div class="photo-bg">
         <div class="row py-2 px-4">
             <div class="col-md-5 mx-auto">
@@ -88,19 +90,13 @@
                             </li>
                             <li class="list-inline-item">
                                 <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"> <i
-                                    class="fas fa-user mr-1"></i>Followers</small>
-                            </li>
-                            <li class="list-inline-item">
-                                <h5 class="font-weight-bold mb-0 d-block">340</h5><small class="text-muted"> <i
-                                    class="fas fa-user mr-1"></i>Following</small>
+                                    class="fas fa-user mr-1"></i>Liked</small>
                             </li>
                         </ul>
                     </div>
                     <div class="px-4 py-3">
                         <h5 class="mb-0">About</h5>
                         <div class="p-4 rounded shadow-sm bg-light">
-                            <p class="font-italic mb-0">Web Developer</p>
-                            <p class="font-italic mb-0">Lives in New York</p>
                             <p class="font-italic mb-0" th:if="${userData.email != null }"
                                th:text="${userData.email}"></p>
                         </div>

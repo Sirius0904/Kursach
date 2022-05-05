@@ -480,6 +480,12 @@
     transition: all 0.2s ease-in;
 }
 
+.card-local-image {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+}
+
 .card-local:hover {
     transform: translateY(-10px);
     box-shadow: 0 5px 15px #9aaab4;
@@ -538,6 +544,30 @@
     background-color: #fff;
     text-align: center;
 }
+
+.card-product-edit-btn {
+    margin-left: 15px;
+    position: absolute;
+    left: 15px;
+    top: 15px;
+
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.card-product-edit-btn svg {
+    display: inline-block;
+    vertical-align: middle;
+
+    stroke: black;
+    fill: #fff;
+
+    transition: all 0.2s ease-in;
+}
+
 
 .card-product-fav-btn svg {
     display: inline-block;

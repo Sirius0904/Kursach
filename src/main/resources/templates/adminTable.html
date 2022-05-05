@@ -67,30 +67,29 @@
                 <div class="bg-white rounded overflow-hidden">
 
                     <div class="px-4 pt-1 pb-1 cover">
-                        <a style="color: #b8a9bb; " th:text="'Wallet ID:' + ${wallet.id}"></a>
 
                     </div>
                     <div class="row bg-light">
-                        <div class="bg-light p-4 d-flex  text-center col-lg-8 offset-2">
-                            <div class="list-inline mb-0">
-                                <li class="list-inline-item">
-                                    <form th:action="@{/service/wallet/withdraw}" method="post">
-                                        <h4 class="mb-3">Payment</h4>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label for="cc-number">Credit card number</label>
-                                                <input type="text" class="form-control" id="cc-number" placeholder=""
-                                                       required="">
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label for="cc-number">Amount</label>
-                                                <input type="number" name="amount" step="0.001" class="form-control">
-                                            </div>
-                                        </div>
-                                        <hr class="mb-4">
-                                        <button class="btn btn-primary btn-lg btn-block" type="submit">Withdraw</button>
-                                    </form>
-                                </li>
+                        <div class="bg-light p-4  text-center col-lg-8 offset-2">
+                            <div class="mb-0">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Wallet</th>
+                                        <th scope="col">Balance</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody th:each="user : ${users}">
+                                    <tr>
+                                        <th scope="row" th:text="${user.username}"></th>
+                                        <td th:text="${user.email}"></td>
+                                        <td th:text="${user.wallet}"></td>
+                                        <td th:text="${user.balance}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="bg-light p-4 d-flex  text-center col-lg-6 offset-1">
