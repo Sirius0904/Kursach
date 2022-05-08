@@ -18,7 +18,5 @@ public class ImageData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String path;
-    private Integer height;
-    private Integer width;
     private ImageType imageType;
 }
