@@ -1,28 +1,31 @@
 package com.bsuir.sirius.controller;
 
 import com.bsuir.sirius.service.UserService;
-import com.bsuir.sirius.to.request.EditImageParametersRequestTO;
-import com.bsuir.sirius.to.request.EditProfileUserDataTO;
-import com.bsuir.sirius.to.request.NewImageRequestTO;
-import com.bsuir.sirius.to.request.RegisterUserRequestTO;
-import com.bsuir.sirius.to.response.DisplayImageTO;
-import com.bsuir.sirius.to.response.PurchaseStatusTO;
-import com.bsuir.sirius.to.response.UserTO;
+import com.bsuir.sirius.to.mvc.request.*;
+import com.bsuir.sirius.to.mvc.response.DisplayImageTO;
+import com.bsuir.sirius.to.mvc.response.PurchaseStatusTO;
+import com.bsuir.sirius.to.mvc.response.UserTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class SiriusController {
 
     @GetMapping(value = "/profile")
     public String getProfilePage(Principal principal, Model model) {
+        model.addAttribute("lastFour", userService.getImages(principal.getName()).stream().limit(4).collect(Collectors.toList()));
         model.addAttribute("userData", userService.getUserInfo(principal.getName()));
         return "profile";
     }
@@ -121,7 +125,8 @@ public class SiriusController {
     }
 
     @GetMapping("my/wallet/deposit")
-    public String depositMyWallet() {
+    public String depositMyWallet(DepositFormTO depositForm, Model model) {
+        model.addAttribute("depositForm", depositForm);
         return "deposit";
     }
 
@@ -130,9 +135,27 @@ public class SiriusController {
         return "withdraw";
     }
 
-    @PostMapping("/service/wallet/{type}")
-    public String walletActions(Principal principal, @PathVariable String type, @RequestParam BigDecimal amount) {
-        userService.walletAction(type, principal.getName(), amount);
+    @PostMapping("/service/wallet/deposit")
+    public String walletActions(@Valid @ModelAttribute("depositForm") DepositFormTO depositForm, BindingResult bindingResult, Principal principal) {
+
+        if (bindingResult.getFieldError("date") == null) {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/yy");
+            YearMonth ym = YearMonth.parse(depositForm.getDate(), fmt);
+            LocalDate dt = ym.atDay(1);
+            if (dt.getYear() < LocalDate.now().getYear()) {
+                bindingResult.rejectValue("date", "error.user", "Invalid expiration date!");
+            }
+        }
+        if (bindingResult.hasErrors()) {
+            return "deposit";
+        }
+        userService.walletAction("deposit", principal.getName(), depositForm, null);
+        return "redirect:/my/wallet";
+    }
+
+    @PostMapping("/service/wallet/withdraw")
+    public String walletActions(Principal principal, @RequestParam BigDecimal amount) {
+        userService.walletAction("withdraw", principal.getName(), null, amount);
         return "redirect:/my/wallet";
     }
 
@@ -153,7 +176,7 @@ public class SiriusController {
     }
 
     @PostMapping("/gallery/store/buy")
-    public RedirectView buyImage(@ModelAttribute("product") DisplayImageTO image, Principal principal, RedirectAttributes attributes) {
+    public RedirectView buyImage(@ModelAttribute("product") DisplayImageTO image, Principal principal, RedirectAttributes attributes) throws Exception {
         System.out.println(image.toString());
         attributes.addFlashAttribute("status", userService.buyImage(image.getId(), principal.getName()));
         attributes.addFlashAttribute("image", image);
@@ -177,27 +200,37 @@ public class SiriusController {
 
     @GetMapping("/image/edit/{id}")
     public String editImage(Model model, @PathVariable Integer id, Principal principal) {
+        if(!userService.isOwner(principal.getName(), id)){
+            return "redirect:/gallery";
+        }
         model.addAttribute("editImage", new EditImageParametersRequestTO());
-        System.out.println(userService.getImageById(id, principal.getName()).toString());
         model.addAttribute("image", userService.getImageById(id, principal.getName()));
         return "editImagePage";
     }
 
     @PostMapping("/image/edit")
     public String saveEditedImage(@ModelAttribute("editImage") EditImageParametersRequestTO newImage, @ModelAttribute("image") DisplayImageTO image) {
-        System.out.println(image.toString());
         userService.changeImageParams(newImage);
         return "redirect:/gallery/image/" + newImage.getId();
     }
 
     @GetMapping("/admin/users")
     public String getAllUsers(Model model, Principal principal) {
-        List<UserTO> allUsers = userService.getAllUsers(principal.getName());
+        List<UserTO> allUsers = userService.getAllUsers();
         if (allUsers == null) {
             return "redirect:/";
         }
         model.addAttribute("users", allUsers);
         return "adminTable";
     }
+
+
+    @GetMapping("/gallery/search")
+    public String findImage(Model model, @RequestParam String name, Principal principal) {
+        model.addAttribute("images", userService.findImage(name, principal == null ? null : principal.getName()));
+        return "gallery";
+    }
+
+
 }
 

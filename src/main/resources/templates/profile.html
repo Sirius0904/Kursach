@@ -51,12 +51,13 @@
 
         .photo-bg {
             width: 100%;
+            height: 100%;
             background: url("../../img/body.png");
         }
     </style>
 </head>
 <body>
-<main class="main">
+<main class="main container-fluid">
     <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
     <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('USER')"></div>
     <div th:insert="~{fragments/adminNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')"></div>
@@ -70,8 +71,10 @@
                             <div class="row">
                                 <div class="profile mr-3 col-lg-3"><img
                                         th:src="${userData.profileImage ?: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80'}"
-                                        alt="..." width="130" height="130"  style="width: 130px; height: 130px; object-fit: cover;" class="rounded mb-2 img-thumbnail"><a href="/profile/edit"
-                                                                                                    class="btn btn-outline-dark btn-sm btn-block">Edit
+                                        alt="..." width="130" height="130"
+                                        style="width: 130px; height: 130px; object-fit: cover;"
+                                        class="rounded mb-2 img-thumbnail"><a href="/profile/edit"
+                                                                              class="btn btn-outline-dark btn-sm btn-block">Edit
                                     profile</a></div>
                                 <div class="media-body mb-5 text-white col-lg-3 pt-5">
                                     <h4 class="mt-0 mb-0" th:text="${userData.fio ?: userData.username}">Mark
@@ -106,18 +109,18 @@
                             <h5 class="mb-0">Recent photos</h5><a href="#" class="btn btn-link text-muted">Show all</a>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6 mb-2 pr-lg-1"><img
-                                    src="https://images.unsplash.com/photo-1469594292607-7bd90f8d3ba4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
-                                    alt="" class="img-fluid rounded shadow-sm"></div>
-                            <div class="col-lg-6 mb-2 pl-lg-1"><img
-                                    src="https://images.unsplash.com/photo-1493571716545-b559a19edd14?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
-                                    alt="" class="img-fluid rounded shadow-sm"></div>
-                            <div class="col-lg-6 pr-lg-1 mb-2"><img
-                                    src="https://images.unsplash.com/photo-1453791052107-5c843da62d97?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
-                                    alt="" class="img-fluid rounded shadow-sm"></div>
-                            <div class="col-lg-6 pl-lg-1"><img
-                                    src="https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
-                                    alt="" class="img-fluid rounded shadow-sm"></div>
+
+                            <div class="col-lg-6 mb-2" th:each="image : ${lastFour}">
+                                <img
+                                        th:src="${image.path}"
+                                        th:data-thing="${image.id}" onclick="redirect(this.getAttribute('data-thing'));"
+                                        alt="" class="rounded shadow-sm"
+                                        style="height: 100%; width: 100%; object-fit: cover; cursor: pointer"></div>
+                            <div class="col-lg-12 mb-2 text-center" th:if="${lastFour.isEmpty()}">
+                                <div
+                                        th:text="'Nothing here yet!'"
+                                        class="text-muted"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,5 +128,10 @@
         </div>
     </div>
 </main>
+<script>
+    function redirect(id) {
+        window.location.href = '/gallery/image/' + id;
+    }
+</script>
 </body>
 </html>

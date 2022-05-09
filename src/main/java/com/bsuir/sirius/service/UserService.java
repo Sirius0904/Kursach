@@ -1,21 +1,23 @@
 package com.bsuir.sirius.service;
 
 import com.bsuir.sirius.entity.*;
+import com.bsuir.sirius.entity.Image;
 import com.bsuir.sirius.enumeration.ImageType;
 import com.bsuir.sirius.repository.*;
-import com.bsuir.sirius.to.request.EditImageParametersRequestTO;
-import com.bsuir.sirius.to.request.EditProfileUserDataTO;
-import com.bsuir.sirius.to.request.NewImageRequestTO;
-import com.bsuir.sirius.to.request.RegisterUserRequestTO;
-import com.bsuir.sirius.to.response.*;
+import com.bsuir.sirius.to.mvc.request.*;
+import com.bsuir.sirius.to.mvc.response.*;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -23,13 +25,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -44,37 +46,69 @@ public class UserService {
     private final TransactionHistoryRepository transactionHistoryRepository;
 
 
+    /*
+     * Поиск пользователя в бд по юзернейму
+     *
+     * Используется для получение имени пользователя в навигационной панели приложения
+     *
+     * */
     public User getCurrentUser(String username) {
         return userRepository.getUserByUsername(username);
     }
 
+
+    /*
+     * Регистрация пользователя
+     *
+     * */
     public void registerUser(RegisterUserRequestTO request) throws Exception {
+
         if (userRepository.getUserByUsername(request.getUsername()) != null) {
             throw new Exception("User already registered");
         }
         if (!request.getPassword().equals(request.getConfirmation())) {
             throw new Exception("Passwords dont match");
         }
+
         User user = new User();
+
+
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.getOne(1));
+
         user.setRoles(roles);
+        user.setPassword(encoder.encode(request.getPassword()));
         user.setUsername(request.getUsername());
+
         UserData userData = new UserData();
         userData.setEmail(request.getEmail());
+
         ImageData imageData = new ImageData().setImageType(ImageType.PROFILE).setPath("user-photos\\1\\unknown.png");
-        imageDataRepository.saveAndFlush(imageData);
         userData.setProfileImage(imageData);
+
         Wallet wallet = new Wallet();
         wallet.setId(UUID.randomUUID().toString());
-        walletRepository.saveAndFlush(wallet);
         userData.setWallet(wallet);
-        userDataRepository.saveAndFlush(userData);
-        user.setPassword(encoder.encode(request.getPassword()));
+
         user.setUserData(userData);
+
+        imageDataRepository.saveAndFlush(imageData);
+        walletRepository.saveAndFlush(wallet);
+        userDataRepository.saveAndFlush(userData);
         userRepository.saveAndFlush(user);
     }
 
+
+    /*
+     * Получение пользовательской информации для профиля
+     *
+     *  Логин
+     *  Мейл
+     *  Фио
+     *  локация
+     *  аватарка
+     *
+     * */
     public UserProfileInfoResponseTO getUserInfo(String username) {
         User user = userRepository.getUserByUsername(username);
         UserProfileInfoResponseTO response = new UserProfileInfoResponseTO();
@@ -107,6 +141,11 @@ public class UserService {
         return response;
     }
 
+
+    /*
+     * Информация для страницы редактирования
+     *
+     * */
     public EditProfileUserDataTO getProfileData(String name) {
         User user = userRepository.getUserByUsername(name);
         EditProfileUserDataTO response = new EditProfileUserDataTO();
@@ -123,6 +162,10 @@ public class UserService {
         return response;
     }
 
+
+    /*
+     * Сохрание внесенных изменений на странице редактирования
+     * */
     public void setUserData(EditProfileUserDataTO request, String username) {
         UserData userData = userRepository.getUserByUsername(username).getUserData();
         if (request.getEmail() != null && request.getEmail().length() != 0) {
@@ -153,6 +196,9 @@ public class UserService {
     }
 
 
+    /*
+     * Список последних транзакций для страницы кошелька
+     * */
     public List<TransactionTO> getLastTransactions(String username) {
         List<TransactionTO> transactions = new ArrayList<>();
         User user = userRepository.getUserByUsername(username);
@@ -175,26 +221,20 @@ public class UserService {
         return transactions;
     }
 
+    /*
+     * Количество транзакций совершенных пользователем
+     * */
     public Integer getTransactionCount(String username) {
         User user = userRepository.getUserByUsername(username);
         Integer id = user.getUserData().getId();
         return transactionHistoryRepository.findAllByBuyerIdOrSellerId(id, id).size();
     }
 
-    public void createCollection(String collectionName, String username) {
-
-    }
-
-    public void addToCollection(String username, String collectionId, String productId) {
-
-    }
-
-    public void removeFromCollection(String username, String collectionId, String productId) {
-
-    }
-
+    /*
+     * Загрузка аватарки
+     *
+     * */
     public void uploadImage(MultipartFile file, String username) throws IOException {
-        System.out.println(file.getContentType());
         if (file.isEmpty()) {
             return;
         }
@@ -232,6 +272,10 @@ public class UserService {
 
     }
 
+
+    /*
+     *  Загрузка изображения в галерею
+     * */
     public DisplayImageTO uploadNewImage(NewImageRequestTO request, String username) throws IOException {
         if (request == null || request.getImage().isEmpty()) {
             return null;
@@ -271,6 +315,10 @@ public class UserService {
         return imageTO;
     }
 
+
+    /*
+     * Получение изображений пользователя/всех
+     * */
     public List<DisplayImageTO> getImages(String username) {
         List<DisplayImageTO> images = new ArrayList<>();
         if (username == null) {
@@ -309,6 +357,10 @@ public class UserService {
         return images;
     }
 
+
+    /*
+     * Получение информации по картинке по ее ID
+     * */
     public DisplayImageTO getImageById(Integer id, String username) {
         Image image = imageRepository.getOne(Long.valueOf(id));
         return new DisplayImageTO(
@@ -326,6 +378,9 @@ public class UserService {
     }
 
 
+    /*
+     * Изменение параметров изображения
+     * */
     public void changeImageParams(EditImageParametersRequestTO request) {
         Image one = imageRepository.getOne(Long.valueOf(request.getId()));
         if (request.getName() != null && !request.getName().isBlank()) {
@@ -343,11 +398,15 @@ public class UserService {
         imageRepository.saveAndFlush(one);
     }
 
+
+    /*
+     * Покупка картинки
+     * */
     @Transactional
-    public PurchaseStatusTO buyImage(String productId, String username) {
+    public PurchaseStatusTO buyImage(String productId, String username) throws Exception {
         Image image = imageRepository.getOne(Long.valueOf(productId));
         if (!image.getIsSellable()) {
-            return new PurchaseStatusTO(false, "Unavailable Product!");
+            return new PurchaseStatusTO(false, "Unavailable Product!", null);
         }
         BigDecimal amount = image.getPrice();
         UserData seller = image.getOwner();
@@ -356,6 +415,7 @@ public class UserService {
         if (buyer.getWallet().getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >= 0) {
             buyer.getWallet().setBalance(buyer.getWallet().getBalance().subtract(amount));
             seller.getWallet().setBalance(seller.getWallet().getBalance().add(amount));
+            String mailTo = image.getOwner().getEmail();
             image.setOwner(buyer);
             image.setIsSellable(false);
             TransactionHistory transaction = new TransactionHistory();
@@ -368,33 +428,65 @@ public class UserService {
             userDataRepository.saveAndFlush(seller);
             userDataRepository.saveAndFlush(buyer);
             imageRepository.saveAndFlush(image);
-            return new PurchaseStatusTO(true, null);
+
+
+            /* pdf)) */
+            Document document = new Document();
+            String path = "user-totals/" + username;
+
+            Path uploadPath = Paths.get(path);
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            path = path + "/" + username + "_buy_" + image.getId() + "_total.pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(path));
+
+            document.open();
+            Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+            document.add(new Paragraph("Good deal! \n", font));
+
+            PdfPTable table = new PdfPTable(3);
+            Stream.of("Username", "Product", "Price")
+                    .forEach(columnTitle -> {
+                        PdfPCell header = new PdfPCell();
+                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                        header.setBorderWidth(2);
+                        header.setPhrase(new Phrase(columnTitle));
+                        table.addCell(header);
+                    });
+            table.addCell(username);
+            table.addCell(image.getImageName());
+            table.addCell(amount.toString());
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(table);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(new Paragraph("Thanks for using our service!\n", font));
+            document.close();
+            /*pdf end*/
+            return new PurchaseStatusTO(true, null, path);
         } else {
-            return new PurchaseStatusTO(false, "Insufficient Funds!");
+            return new PurchaseStatusTO(false, "Insufficient Funds!", null);
         }
     }
 
-    public List<TransactionHistory> getUserTransactions(String username) {
-        return null;
-    }
-
-    public void doTransfer(String username, String recipient, BigDecimal amount) {
-
-    }
 
     @Transactional
-    public void walletAction(String type, String username, BigDecimal amount) {
+    public void walletAction(String type, String username, DepositFormTO form, BigDecimal amount) {
         User user = userRepository.getUserByUsername(username);
         TransactionHistory transaction = new TransactionHistory();
         transaction.setTransactionTime(LocalDateTime.now());
         Wallet wallet = user.getUserData().getWallet();
         switch (type) {
             case "deposit":
-                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                if (form.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
                     return;
                 }
                 transaction.setSeller(user.getUserData());
-                transaction.setAmount(amount);
+                transaction.setAmount(form.getAmount());
                 wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
                 walletRepository.saveAndFlush(wallet);
                 transactionHistoryRepository.saveAndFlush(transaction);
@@ -411,22 +503,63 @@ public class UserService {
         }
     }
 
-    public List<UserTO> getAllUsers(String username) {
-        if (!userRepository.getUserByUsername(username).getRoles().contains(roleRepository.getOne(2))) {
-            return null;
-        } else {
-            List<UserTO> users = new ArrayList<>();
-            userRepository.findAll().forEach(e -> {
-                users.add(
-                        new UserTO(
-                                e.getUsername(),
-                                e.getUserData().getEmail(),
-                                e.getUserData().getWallet().getId(),
-                                e.getUserData().getWallet().getBalance()
-                        )
-                );
-            });
-            return users;
+    public List<UserTO> getAllUsers() {
+        List<UserTO> users = new ArrayList<>();
+        userRepository.findAll().forEach(e -> {
+            users.add(
+                    new UserTO(
+                            e.getUsername(),
+                            e.getUserData().getEmail(),
+                            e.getUserData().getWallet().getId(),
+                            e.getUserData().getWallet().getBalance()
+                    )
+            );
+        });
+        return users;
+    }
+
+
+    public boolean isOwner(String username, Integer imageId) {
+        Image one = imageRepository.getOne(Long.valueOf(imageId));
+        if (one == null) {
+            return false;
         }
+        return one.getOwner().getBaseUser().getUsername().equals(username);
+    }
+
+    public List<DisplayImageTO> findImage(String name, String username) {
+        List<DisplayImageTO> result = new ArrayList<>();
+        if (username != null) {
+            imageRepository.findAllByImageNameContaining(name).forEach(image -> {
+                result.add(new DisplayImageTO(
+                        image.getId().toString(),
+                        "\\" + image.getImageData().getPath(),
+                        image.getImageName(),
+                        image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
+                        image.getDescription(),
+                        image.getOwner().getBaseUser().getUsername(),
+                        image.getLikeCount(),
+                        image.getPrice(),
+                        image.getIsSellable(),
+                        username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername())
+                ));
+            });
+        } else {
+            imageRepository.findAllByImageNameContaining(name).forEach(image -> {
+                result.add(new DisplayImageTO(
+                        image.getId().toString(),
+                        "\\" + image.getImageData().getPath(),
+                        image.getImageName(),
+                        image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
+                        image.getDescription(),
+                        image.getOwner().getBaseUser().getUsername(),
+                        image.getLikeCount(),
+                        image.getPrice(),
+                        image.getIsSellable(),
+                        false
+                ));
+            });
+        }
+        return result;
     }
 }

@@ -75,6 +75,7 @@
                             <div class="mb-0">
                                 <h2 th:if="${!status.isDone}" th:text="${status.message}"></h2>
                                 <h2 th:if="${status.isDone}" th:text="'Purchase successful!'"></h2>
+                                <a th:if="${status.isDone}" th:href="'/'+ ${status.checkUrl}">Check!</a>
                             </div>
                         </div>
                         <div class="bg-light p-4 d-flex  text-center col-lg-6 offset-1">

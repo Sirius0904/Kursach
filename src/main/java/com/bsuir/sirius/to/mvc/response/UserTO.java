@@ -1,4 +1,4 @@
-package com.bsuir.sirius.to.response;
+package com.bsuir.sirius.to.mvc.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

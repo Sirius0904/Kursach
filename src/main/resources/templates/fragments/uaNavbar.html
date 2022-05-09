@@ -46,10 +46,10 @@
     </div>
     <!-- header-search -->
     <div class="header-search">
-        <form class="search">
+        <form class="search" th:action="@{/gallery/search}" method="get">
             <label class="search-label">
                 <img class="search-icon" th:src="@{/img/icons/search.svg}" alt="Search"/>
-                <input class="search-input" type="text" placeholder="Search store"/>
+                <input class="search-input" type="text" name="name" placeholder="Search store"/>
             </label>
         </form>
     </div>

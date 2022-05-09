@@ -3,7 +3,6 @@ package com.bsuir.sirius.controller;
 import com.bsuir.sirius.entity.Wallet;
 import com.bsuir.sirius.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 

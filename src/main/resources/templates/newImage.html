@@ -31,29 +31,103 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <meta name="theme-color" content="#ffffff"/>
+
+    <style>
+        .profile-head {
+            transform: translateY(5rem)
+        }
+
+        .cover {
+            background-image: url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);
+            background-size: cover;
+            background-repeat: no-repeat
+        }
+
+        body {
+            object-fit: cover;
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        .photo-bg {
+            width: 100%;
+            background: url("../../img/body.png");
+        }
+    </style>
 </head>
 <body>
 
-<main class="main container">
+<main class="main container-fluid">
     <div th:insert="~{fragments/uaNavbar.html}" sec:authorize="!isAuthenticated()"></div>
     <div th:insert="~{fragments/aNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('USER')"></div>
     <div th:insert="~{fragments/adminNavbar.html}" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')"></div>
+    <div class="photo-bg" style="height: 100%">
+        <div class="row py-2 px-4">
+            <div class="col-md-5 mx-auto" style=" padding-top: 150px">
+                <!-- Profile widget -->
+                <div class="bg-white rounded overflow-hidden">
+                    <div class="px-4 pt-1 pb-1 cover">
+                        <a style="color: #b8a9bb; " th:text="'Upload your image!'"></a>
 
-    <form action="#" th:action="@{/my/images/upload}" th:object="${newImageRequest}" method="post"
-          enctype="multipart/form-data" >
-        <p>Name: <input type="text" th:field="*{name}"/></p>
-        <p>Description: <input type="text" th:field="*{description}"/></p>
-        <p>Price: <input type="number" th:field="*{price}" step="0.0001"></p>
-        <p>Sellable?:
-            <select th:field="*{status}">
-                <option value="YES">da</option>
-                <option value="NO" selected>net</option>
-            </select>
-        </p>
-        <p>document:<input type="file" th:field="*{image}" accept="image/png, image/jpeg, image/jpg"/>
-            <input type="submit" value="upload"/>
-            <input type="reset" value="Reset"/></p>
-    </form>
+                    </div>
+                    <div class="row bg-light">
+                        <div class="bg-light p-4  text-center col-lg-12">
+                            <div class="mb-0">
+                                <form style="margin-bottom: 50px"
+                                      th:action="@{/my/images/upload}" th:object="${newImageRequest}" method="post"
+                                      enctype="multipart/form-data">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" class="form-control" th:field="*{name}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlTextarea1">Description</label>
+                                            <textarea class="form-control" th:field="*{description}"
+                                                      id="exampleFormControlTextarea1" rows="3"></textarea>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="state" class="form-label">Do you want to sell this
+                                                image? </label>
+                                            <select class="form-select" th:field="*{status}" id="state" required="">
+                                                <option value="YES" selected>Yes</option>
+                                                <option value="NO">No</option>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid state.
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Price</label>
+                                            <input type="number" th:field="*{price}" class="form-control"
+                                                   step="0.01">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Image</label>
+                                            <input type="file" th:field="*{image}" class="form-control"
+                                                   accept="image/png, image/jpeg, image/jpg"/>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <button class="w-100 btn btn-lg btn-primary btn-outline-light"
+                                            style="background-color: #B8AFD4; color: black;" type="submit">Save
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="bg-light p-4 d-flex  text-center col-lg-6 offset-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </body>
 </html>
