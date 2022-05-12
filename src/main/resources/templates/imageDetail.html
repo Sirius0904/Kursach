@@ -113,7 +113,9 @@
                         <div class="row">
                             <h2>This image is on sale!</h2>
                             <h3 th:text="'You can buy it only for ' + ${image.price} + ' ERC'" class="pb-4"></h3>
-                            <button class="btn btn-primary" th:data-thing="${image.id}"
+                            <button class="w-100 btn btn-lg btn-primary btn-outline-light"
+                                    style="background-color: #B8AFD4; color: black;" type="submit"
+                                    th:data-thing="${image.id}"
                                     onclick="window.location.href='/gallery/store/buy/' + this.getAttribute('data-thing')">
                                 Buy
                             </button>

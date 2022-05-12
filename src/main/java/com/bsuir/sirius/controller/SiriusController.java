@@ -185,8 +185,9 @@ public class SiriusController {
 
     @GetMapping("/gallery/store/total")
     public ModelAndView purchaseSuccessful(@ModelAttribute("status") PurchaseStatusTO status, @ModelAttribute("image") DisplayImageTO image, ModelMap model) {
-        System.out.println(status.toString());
-        System.out.println(image.toString());
+        if(image == null || status == null || status.getIsDone() == null){
+            return new ModelAndView("redirect:/");
+        }
         model.addAttribute("status", status);
         model.addAttribute("image", image);
         return new ModelAndView("purchaseSuccessful", model);
