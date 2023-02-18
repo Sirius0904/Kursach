@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%; flex-direction: column">
-                        <div style="padding: 10px 30px 50px; height: 30%; width: 100%; display: flex; flex-direction: column;justify-content: space-between ">
+                        <div style="padding: 10px 30px 50px; min-height: 30%; width: 100%; display: flex; flex-direction: column;justify-content: space-between ">
                             <div class="row" style="">
                                 <div style="display: flex; align-items: center; padding-bottom: 30px; flex-direction: row; justify-content: space-between">
                                     <p style="font-size: 32px; margin-block-end: 0" th:text="${image.name}"></p>
@@ -174,13 +174,7 @@
                                             Heading</p>
                                     </div>
                                 </div>
-                                <p th:text="${image.description}"> Lorem ipsum dolor sit amet, consectetur adipiscing
-                                    elit, sed do eiusmod tempor
-                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                                    deserunt mollit anim id est laborum.</p>
+                                <p th:text="${image.description}"> </p>
                             </div>
 
                         </div>
@@ -198,6 +192,9 @@
                         <div class="comments">
 
                             <p>Comments:</p>
+                            <div class="comment" th:if="${image.comments == null || image.comments.isEmpty()}">
+
+                            </div>
 
                             <div class="comment" th:if="${image.comments != null}"
                                  th:each="comment : ${image.comments}">
