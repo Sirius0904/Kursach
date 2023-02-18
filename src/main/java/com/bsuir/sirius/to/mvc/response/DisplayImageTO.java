@@ -1,11 +1,14 @@
 package com.bsuir.sirius.to.mvc.response;
 
+import com.bsuir.sirius.entity.Commentary;
+import com.bsuir.sirius.to.rest.request.CommentTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,4 +25,5 @@ public class DisplayImageTO {
     private BigDecimal price;
     private Boolean isSellable;
     private Boolean isOwner;
+    private List<Commentary> comments;
 }

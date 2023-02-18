@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +21,8 @@ public class ImageData {
     private Integer id;
     private String path;
     private ImageType imageType;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Commentary> commentaryList = new ArrayList<>();
+
 }

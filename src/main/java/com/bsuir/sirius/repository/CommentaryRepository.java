@@ -1,11 +1,9 @@
 package com.bsuir.sirius.repository;
 
-import com.bsuir.sirius.entity.ImageData;
+import com.bsuir.sirius.entity.Commentary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface ImageDataRepository extends JpaRepository<ImageData, Integer> {
+public interface CommentaryRepository extends JpaRepository<Commentary, Integer> {
 }

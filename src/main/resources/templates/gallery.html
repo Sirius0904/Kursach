@@ -42,10 +42,10 @@
         <div class="col-lg-2 mt-3" th:if="${!images.isEmpty()}" th:each="image : ${images}">
             <div class="card-local card-vertical card-product" style="cursor: pointer"
                  th:data-thing="${image.id}" onclick="redirect(this.getAttribute('data-thing'));">
-                <p><a class="card-product-link">
+                <a class="card-product-link">
                     <img class="card-product-img" th:src="${image.path}" alt="Product">
                 </a>
-                </p>
+
             </div>
             <h4 class="name-imag" th:text="${image.name}"></h4>
         </div>

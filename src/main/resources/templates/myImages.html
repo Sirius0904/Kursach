@@ -44,8 +44,8 @@
             <div class="card-local card-vertical card-product" style="cursor: pointer;"
                  onclick="window.location.href = 'images/new'">
                 <a class="card-product-link"
-                   style="background: #B8AFD4; text-decoration: none;  padding-top: 75px">
-                    <span style="color: rgba(255,255,255,0.31); font-size: 7rem; padding-left: 60px;">+</span>
+                   style="background: #B8AFD4; text-decoration: none; display: flex; align-items: center; justify-content: center">
+                    <span style="color: rgba(255,255,255,0.31); font-size: 7rem; text-decoration: none">+</span>
                 </a>
             </div>
             <h4 class="name-imag">New Image</h4>
@@ -53,10 +53,10 @@
         <div class="col-lg-2 mt-3" th:if="${!imageData.isEmpty()}" th:each="image : ${imageData}">
             <div class="card-local card-vertical card-product" style="cursor: pointer"
                  th:data-thing="${image.id}" onclick="redirect(this.getAttribute('data-thing'));">
-                <p><a class="card-product-link">
+                <a class="card-product-link">
                     <img class="card-product-img" th:src="${image.path}" alt="Product">
                 </a>
-                </p>
+
             </div>
             <h4 class="name-imag" th:text="${image.name}"></h4>
         </div>

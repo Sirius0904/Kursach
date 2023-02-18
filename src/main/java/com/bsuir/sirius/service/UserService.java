@@ -6,6 +6,7 @@ import com.bsuir.sirius.enumeration.ImageType;
 import com.bsuir.sirius.repository.*;
 import com.bsuir.sirius.to.mvc.request.*;
 import com.bsuir.sirius.to.mvc.response.*;
+import com.bsuir.sirius.to.rest.request.CommentTO;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -334,7 +335,8 @@ public class UserService {
                         image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
-                        false
+                        false,
+                        image.getImageData().getCommentaryList()
                 ));
             });
         } else {
@@ -350,7 +352,8 @@ public class UserService {
                         image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
-                        true
+                        true,
+                        image.getImageData().getCommentaryList()
                 ));
             });
         }
@@ -373,7 +376,8 @@ public class UserService {
                 image.getLikeCount(),
                 image.getPrice(),
                 image.getIsSellable(),
-                username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername())
+                username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername()),
+                image.getImageData().getCommentaryList()
         );
     }
 
@@ -541,7 +545,8 @@ public class UserService {
                         image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
-                        username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername())
+                        username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername()),
+                        image.getImageData().getCommentaryList()
                 ));
             });
         } else {
@@ -556,7 +561,8 @@ public class UserService {
                         image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
-                        false
+                        false,
+                        image.getImageData().getCommentaryList()
                 ));
             });
         }

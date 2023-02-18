@@ -177,7 +177,6 @@ public class SiriusController {
 
     @PostMapping("/gallery/store/buy")
     public RedirectView buyImage(@ModelAttribute("product") DisplayImageTO image, Principal principal, RedirectAttributes attributes) throws Exception {
-        System.out.println(image.toString());
         attributes.addFlashAttribute("status", userService.buyImage(image.getId(), principal.getName()));
         attributes.addFlashAttribute("image", image);
         return new RedirectView("/gallery/store/total");
@@ -231,7 +230,6 @@ public class SiriusController {
         model.addAttribute("images", userService.findImage(name, principal == null ? null : principal.getName()));
         return "gallery";
     }
-
 
 }
 
