@@ -8,14 +8,23 @@ import com.bsuir.sirius.repository.CommentaryRepository;
 import com.bsuir.sirius.repository.ImageDataRepository;
 import com.bsuir.sirius.repository.ImageRepository;
 import com.bsuir.sirius.repository.UserDataRepository;
+import com.bsuir.sirius.service.AnalyzerService;
+import com.bsuir.sirius.to.rest.request.AnalyzeImageTO;
 import com.bsuir.sirius.to.rest.request.CommentTO;
+import com.bsuir.sirius.to.rest.response.AnalyzeImageResponseTO;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -27,6 +36,8 @@ public class SiriusRestController {
     private final CommentaryRepository commentaryRepository;
 
     private final ImageDataRepository imageDataRepository;
+
+    private final AnalyzerService analyzerService;
 
 
     @PostMapping("/gallery/image/comment")
@@ -48,5 +59,24 @@ public class SiriusRestController {
         }
 
         return ResponseEntity.ok("");
+    }
+
+
+    @PostMapping("/ai/image")
+    public AnalyzeImageResponseTO analyzeImage(@RequestBody AnalyzeImageTO image) throws Exception{
+        String base64Image = image.getBytes().split(",")[1];
+        byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
+
+        final int w = img.getWidth();
+        final int h = img.getHeight();
+        BufferedImage scaledImage = new BufferedImage((w / 10),(h / 10), BufferedImage.TYPE_INT_ARGB);
+        final AffineTransform at = AffineTransform.getScaleInstance(0.1, 0.1);
+        final AffineTransformOp ato = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+        scaledImage = ato.filter(img, scaledImage);
+        ImageIO.write(scaledImage, "PNG", new File("D:/image.png"));
+
+
+        return new AnalyzeImageResponseTO(analyzerService.feedImage(scaledImage));
     }
 }

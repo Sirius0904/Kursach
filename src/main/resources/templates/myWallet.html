@@ -107,46 +107,48 @@
             <div class="col-md-5 mx-auto" style="">
                 <!-- Profile widget -->
                 <div class="bg-white rounded overflow-hidden">
-                    <div class="px-4 pt-1 pb-1 bg-light" style="background-image: none">
-                        <a style="color: #4e5c87; ">Last transactions:</a>
-                    </div>
-                    <div th:each="transaction : ${transactions}">
-                        <div class="row bg-light" th:if="${transaction.sellerWallet} == ${wallet.id}">
-                            <div class="bg-light p-4 d-flex  text-center col-lg-3">
-                                <ul class="list-inline mb-0">
-                                    <li class="list-inline-item" style="padding-right: 250px">
-                                        <h5 class="font-weight-bold mb-0 d-block text-success"
-                                            th:text="'+' + ${transaction.amount}"></h5>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="bg-light p-4 d-flex  text-center offset-1 col-lg-8">
-                                <ul class="list-inline mb-0">
-                                    <li class="list-inline-item">
-                                        <h5 class="font-weight-bold mb-0 d-block"
-                                            th:text="${transaction.buyerWallet} ?: 'deposit'"></h5>
-                                        <small th:text="${transaction.time}" class="text-muted"></small>
-                                    </li>
-                                </ul>
-                            </div>
+                    <div>
+                        <div class="px-4 pt-1 pb-1 bg-light" style="background-image: none">
+                            <a style="color: #4e5c87; ">Last transactions:</a>
                         </div>
-                        <div class="row bg-light" th:if="${transaction.buyerWallet} == ${wallet.id}">
-                            <div class="bg-light p-4 d-flex  text-center col-lg-3">
-                                <ul class="list-inline mb-0">
-                                    <li class="list-inline-item" style="padding-right: 250px">
-                                        <h5 class="font-weight-bold mb-0 d-block text-danger"
-                                            th:text="'-'+ ${transaction.amount}"></h5>
-                                    </li>
-                                </ul>
+                        <div th:each="transaction : ${transactions}">
+                            <div class="row bg-light" th:if="${transaction.sellerWallet} == ${wallet.id}">
+                                <div class="bg-light p-4 d-flex  text-center col-lg-3">
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item"  style="padding-right: 250px">
+                                            <h5 class="font-weight-bold mb-0 d-block text-success"
+                                                th:text="'+' + ${transaction.amount}"></h5>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="bg-light p-4 text-center offset-1 col-lg-8">
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item">
+                                            <h5 class="font-weight-bold mb-0 d-block"
+                                                th:text="${transaction.buyerWallet} ?: 'deposit'"></h5>
+                                            <small th:text="${transaction.time.toString().replace('T', ' ')}" class="text-muted"></small>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="bg-light p-4 d-flex text-center offset-1 col-lg-8">
-                                <ul class="list-inline mb-0">
-                                    <li class="list-inline-item">
-                                        <h5 class="font-weight-bold mb-0 d-block"
-                                            th:text="${transaction.sellerWallet} ?: 'withdraw'"></h5>
-                                        <small th:text="${transaction.time}" class="text-muted"></small>
-                                    </li>
-                                </ul>
+                            <div class="row bg-light" th:if="${transaction.buyerWallet} == ${wallet.id}">
+                                <div class="bg-light p-4 d-flex  text-center col-lg-3">
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item" style="padding-right: 250px; width: 100%;" >
+                                            <h5 class="font-weight-bold mb-0 d-block text-danger"
+                                                th:text="'-'+ ${transaction.amount}"></h5>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="bg-light p-4 text-center offset-1 col-lg-8">
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item">
+                                            <h5 class="font-weight-bold mb-0 d-block"
+                                                th:text="${transaction.sellerWallet} ?: 'withdraw'"></h5>
+                                            <small th:text="${transaction.time.toString().replace('T', ' ')}" class="text-muted"></small>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>

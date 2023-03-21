@@ -71,20 +71,24 @@
 
                     </div>
                     <div class="row bg-light">
-                        <div class="bg-light p-4 d-flex  text-center col-lg-8 offset-2">
-                            <div class="list-inline mb-0">
-                                <li class="list-inline-item">
-                                    <form th:action="@{/service/wallet/withdraw}" method="post">
+                        <div class="bg-light p-4 d-flex  text-center col-lg-8 offset-2" style="display: flex; align-items: center; justify-content: center">
+                            <div class="list-inline mb-0" style="width: 80%">
+                                <li class="list-inline-item" style="width: 100%">
+                                    <form style="width: 100%" th:action="@{/service/wallet/withdraw}" method="post">
                                         <h4 class="mb-3">Payment</h4>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label for="cc-number">Credit card number</label>
-                                                <input type="text" class="form-control" id="cc-number" placeholder=""
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="cc-number"
+                                                       placeholder=""
+                                                       onkeypress='return formats(this,event)'
                                                        required="">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label for="cc-number">Amount</label>
-                                                <input type="number" name="amount" step="0.001" class="form-control">
+                                                <input type="number" name="amount" step="0.001" class="form-control" min="1" max="100">
                                             </div>
                                         </div>
                                         <hr class="mb-4">
@@ -103,5 +107,23 @@
         </div>
     </div>
 </main>
+<script>
+    function formats(ele, e) {
+        if(!e.key.match(/(\d)/g)){
+            return false;
+        }
+
+        if (ele.value.length < 19) {
+            ele.value = ele.value.replace(/\W/gi, '').replace(/(.{4})/g, '$1 ');
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+</script>
 </body>
+
 </html>

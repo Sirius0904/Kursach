@@ -43,6 +43,11 @@ public class SiriusController {
         return "collection";
     }
 
+    @GetMapping("/analyze")
+    public String analyze(){
+        return "analyzer";
+    }
+
     @GetMapping(value = "/profile")
     public String getProfilePage(Principal principal, Model model) {
         model.addAttribute("lastFour", userService.getImages(principal.getName()).stream().limit(4).collect(Collectors.toList()));
@@ -184,7 +189,7 @@ public class SiriusController {
 
     @GetMapping("/gallery/store/total")
     public ModelAndView purchaseSuccessful(@ModelAttribute("status") PurchaseStatusTO status, @ModelAttribute("image") DisplayImageTO image, ModelMap model) {
-        if(image == null || status == null || status.getIsDone() == null){
+        if (image == null || status == null || status.getIsDone() == null) {
             return new ModelAndView("redirect:/");
         }
         model.addAttribute("status", status);
@@ -200,7 +205,7 @@ public class SiriusController {
 
     @GetMapping("/image/edit/{id}")
     public String editImage(Model model, @PathVariable Integer id, Principal principal) {
-        if(!userService.isOwner(principal.getName(), id)){
+        if (!userService.isOwner(principal.getName(), id)) {
             return "redirect:/gallery";
         }
         model.addAttribute("editImage", new EditImageParametersRequestTO());
