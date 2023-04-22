@@ -558,6 +558,21 @@
     text-align: center;
 }
 
+.card-product-download-btn {
+    margin-left: 75px;
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    background-color: #fff;
+    text-align: center;
+}
+
 .card-product-edit-btn svg {
     display: inline-block;
     vertical-align: middle;

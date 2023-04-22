@@ -3,6 +3,7 @@ package com.bsuir.sirius.service;
 import com.bsuir.sirius.entity.*;
 import com.bsuir.sirius.entity.Image;
 import com.bsuir.sirius.enumeration.ImageType;
+import com.bsuir.sirius.exception.SiriusProcessingImageException;
 import com.bsuir.sirius.repository.*;
 import com.bsuir.sirius.to.mvc.request.*;
 import com.bsuir.sirius.to.mvc.response.*;
@@ -12,21 +13,29 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,6 +45,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UserDataRepository userDataRepository;
@@ -45,6 +55,8 @@ public class UserService {
     private final ImageDataRepository imageDataRepository;
     private final WalletRepository walletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
+
+    private final AnalyzerService analyzerService;
 
 
     /*
@@ -247,6 +259,7 @@ public class UserService {
 
         ImageData imageData = new ImageData();
 
+
         Image image = new Image();
         image.setImageName("profile_image");
         image.setOwner(userRepository.getUserByUsername(username).getUserData());
@@ -255,6 +268,7 @@ public class UserService {
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
+
 
         try (InputStream inputStream = file.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
@@ -277,13 +291,14 @@ public class UserService {
     /*
      *  Загрузка изображения в галерею
      * */
-    public DisplayImageTO uploadNewImage(NewImageRequestTO request, String username) throws IOException {
+    public DisplayImageTO uploadNewImage(NewImageRequestTO request, String username) throws IOException, SiriusProcessingImageException {
         if (request == null || request.getImage().isEmpty()) {
             return null;
         }
         if (!request.getImage().getContentType().equals("image/jpeg") && !request.getImage().getContentType().equals("image/png")) {
             return null;
         }
+
         String fileName = StringUtils.cleanPath(request.getImage().getOriginalFilename());
         User user = userRepository.getUserByUsername(username);
         String uploadDir = "user-photos/" + user.getId();
@@ -303,6 +318,10 @@ public class UserService {
         try (InputStream inputStream = request.getImage().getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            log.info("feeding image");
+            if (analyzerService.feedImage(request.getImage().getBytes()) == 4) {
+                throw new SiriusProcessingImageException("Image not allowed", "Image contains '4'");
+            }
             imageData.setPath(filePath.toString());
             imageData.setImageType(ImageType.PUBLIC);
             imageDataRepository.saveAndFlush(imageData);
@@ -417,6 +436,7 @@ public class UserService {
         UserData buyer = userRepository.getUserByUsername(username).getUserData();
 
         if (buyer.getWallet().getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >= 0) {
+            String prevOwner = image.getOwner().getBaseUser().getUsername();
             buyer.getWallet().setBalance(buyer.getWallet().getBalance().subtract(amount));
             seller.getWallet().setBalance(seller.getWallet().getBalance().add(amount));
             String mailTo = image.getOwner().getEmail();
@@ -448,20 +468,23 @@ public class UserService {
             PdfWriter.getInstance(document, new FileOutputStream(path));
 
             document.open();
-            Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+            Font font = FontFactory.getFont(FontFactory.TIMES, 16, BaseColor.BLACK);
             document.add(new Paragraph("Good deal! \n", font));
 
-            PdfPTable table = new PdfPTable(3);
-            Stream.of("Username", "Product", "Price")
+            PdfPTable table = new PdfPTable(6);
+            Stream.of("Buyer", "Seller", "Image name", "Date", "Time", "Price")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                        header.setBorderWidth(2);
+                        header.setBorderWidth(1);
                         header.setPhrase(new Phrase(columnTitle));
                         table.addCell(header);
                     });
             table.addCell(username);
-            table.addCell(image.getImageName());
+            table.addCell(prevOwner);
+            table.addCell(image.getImageName().toUpperCase());
+            table.addCell(LocalDate.now().toString());
+            table.addCell(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
             table.addCell(amount.toString());
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -469,6 +492,11 @@ public class UserService {
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(new Paragraph("Thanks for using our service!\n", font));
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance("./img.png", true);
+            pdfImage.scalePercent(25f);
+            document.add(pdfImage);
             document.close();
             /*pdf end*/
             return new PurchaseStatusTO(true, null, path);

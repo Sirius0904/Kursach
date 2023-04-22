@@ -66,17 +66,10 @@ public class SiriusRestController {
     public AnalyzeImageResponseTO analyzeImage(@RequestBody AnalyzeImageTO image) throws Exception{
         String base64Image = image.getBytes().split(",")[1];
         byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
-        BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-        final int w = img.getWidth();
-        final int h = img.getHeight();
-        BufferedImage scaledImage = new BufferedImage((w / 10),(h / 10), BufferedImage.TYPE_INT_ARGB);
-        final AffineTransform at = AffineTransform.getScaleInstance(0.1, 0.1);
-        final AffineTransformOp ato = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
-        scaledImage = ato.filter(img, scaledImage);
-        ImageIO.write(scaledImage, "PNG", new File("D:/image.png"));
+        //ImageIO.write(scaledImage, "PNG", new File("D:/image.png"));
 
 
-        return new AnalyzeImageResponseTO(analyzerService.feedImage(scaledImage));
+        return new AnalyzeImageResponseTO(analyzerService.feedImage(imageBytes));
     }
 }

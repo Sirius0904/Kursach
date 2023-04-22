@@ -155,6 +155,20 @@
                                     </g>
                                 </svg>
                             </button>
+                            <a th:if="${image.isOwner}" class="card-product-download-btn"
+                               style="margin-right: 10px; cursor: pointer"
+                               th:data-thing="${image.path}"
+                               th:href="${image.path}"
+                               th:download="${image.id}" target="_blank">
+                                <svg height="30" width="30" fill="#000000" viewBox="0 0 1024 1024"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path d="M512 666.5L367.2 521.7l36.2-36.2 83 83V256h51.2v312.5l83-83 36.2 36.2L512 666.5zm-204.8 50.3V768h409.6v-51.2H307.2z"></path>
+                                    </g>
+                                </svg>
+                            </a>
                             <a>
                                 <img class="card-product-img" th:src="${image.getPath()}" alt="Product"
                                      style="width: 100%; min-height: 640px; object-fit: cover">
@@ -174,13 +188,14 @@
                                             Heading</p>
                                     </div>
                                 </div>
-                                <p th:text="${image.description}"> </p>
+                                <p th:text="${image.description}"></p>
                             </div>
 
                         </div>
 
                         <form method="post" id="comment-form" class="add-comment">
-                            <input required minlength="1" maxlength="100" name="comment" placeholder="Add comment..." type="text"/>
+                            <input required minlength="1" maxlength="100" name="comment" placeholder="Add comment..."
+                                   type="text"/>
 
                             <button>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -226,7 +241,7 @@
                     <div style="padding: 10px 30px 20px;">
                         <div class="row">
                             <h2>This image is on sale!</h2>
-                            <h3 th:text="'You can buy it only for ' + ${image.price} + ' ERC'" class="pb-4"></h3>
+                            <h3 th:text="'You can buy it just for ' + ${image.price} + ' ERC'" class="pb-4"></h3>
                             <button class="w-100 btn btn-lg btn-primary btn-outline-light"
                                     style="background-color: #B8AFD4; color: black;" type="submit"
                                     th:data-thing="${image.id}"

@@ -1,5 +1,6 @@
 package com.bsuir.sirius.controller;
 
+import com.bsuir.sirius.exception.SiriusProcessingImageException;
 import com.bsuir.sirius.service.UserService;
 import com.bsuir.sirius.to.mvc.request.*;
 import com.bsuir.sirius.to.mvc.response.DisplayImageTO;
@@ -44,7 +45,7 @@ public class SiriusController {
     }
 
     @GetMapping("/analyze")
-    public String analyze(){
+    public String analyze() {
         return "analyzer";
     }
 
@@ -112,8 +113,14 @@ public class SiriusController {
         if (newImageRequest == null) {
             return "redirect:/my/images";
         }
-        model.addAttribute("image", userService.uploadNewImage(newImageRequest, principal.getName()));
-        return "uploadConfirmed";
+        try {
+            model.addAttribute("image", userService.uploadNewImage(newImageRequest, principal.getName()));
+            return "uploadConfirmed";
+        } catch (SiriusProcessingImageException ex){
+            model.addAttribute("errorTitle", ex.getTitle());
+            model.addAttribute("errorText", ex.getMessage());
+            return "error";
+        }
     }
 
     @GetMapping("my/images/new")
@@ -157,6 +164,7 @@ public class SiriusController {
         userService.walletAction("deposit", principal.getName(), depositForm, null);
         return "redirect:/my/wallet";
     }
+
 
     @PostMapping("/service/wallet/withdraw")
     public String walletActions(Principal principal, @RequestParam BigDecimal amount) {

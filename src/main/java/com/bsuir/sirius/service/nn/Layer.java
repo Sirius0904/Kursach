@@ -1,6 +1,14 @@
 package com.bsuir.sirius.service.nn;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public class Layer {
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Layer implements Serializable {
 
     public int size;
     public double[] neurons;

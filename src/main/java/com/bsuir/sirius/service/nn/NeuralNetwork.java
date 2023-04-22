@@ -1,7 +1,25 @@
 package com.bsuir.sirius.service.nn;
 
+
+import lombok.extern.slf4j.Slf4j;
+
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.imageio.ImageIO;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Slf4j
 public class NeuralNetwork {
 
     private double learningRate;
@@ -9,14 +27,24 @@ public class NeuralNetwork {
     private UnaryOperator<Double> activation;
     private UnaryOperator<Double> derivative;
 
-    public NeuralNetwork(double learningRate, UnaryOperator<Double> activation, UnaryOperator<Double> derivative, int... sizes) {
+    private static final UnaryOperator<Double> SIGMOID = x -> 1 / (1 + Math.exp(-x));
+    private static final UnaryOperator<Double> D_SIGMOID = y -> y * (1 - y);
+
+    private static final double LEARNING_RATE = 0.001;
+
+    private static final Integer[] SIZES = List.of(784, 512, 128, 32, 10).toArray(Integer[]::new);
+
+
+    public NeuralNetwork(double learningRate, UnaryOperator<Double> activation, UnaryOperator<Double> derivative, Integer[] sizes) {
         this.learningRate = learningRate;
         this.activation = activation;
         this.derivative = derivative;
         layers = new Layer[sizes.length];
+
+
         for (int i = 0; i < sizes.length; i++) {
             int nextSize = 0;
-            if(i < sizes.length - 1) nextSize = sizes[i + 1];
+            if (i < sizes.length - 1) nextSize = sizes[i + 1];
             layers[i] = new Layer(sizes[i], nextSize);
             for (int j = 0; j < sizes[i]; j++) {
                 layers[i].biases[j] = Math.random() * 2.0 - 1.0;
@@ -27,9 +55,10 @@ public class NeuralNetwork {
         }
     }
 
+
     public double[] feedForward(double[] inputs) {
         System.arraycopy(inputs, 0, layers[0].neurons, 0, inputs.length);
-        for (int i = 1; i < layers.length; i++)  {
+        for (int i = 1; i < layers.length; i++) {
             Layer l = layers[i - 1];
             Layer l1 = layers[i];
             for (int j = 0; j < l1.size; j++) {
@@ -85,4 +114,62 @@ public class NeuralNetwork {
         }
     }
 
+    public static NeuralNetwork fromLayers(Layer[] layers) {
+        return new NeuralNetwork(LEARNING_RATE, layers, SIGMOID, D_SIGMOID);
+    }
+
+    public static NeuralNetwork learnAndInit(String filePath) {
+        NeuralNetwork nn = new NeuralNetwork(LEARNING_RATE, SIGMOID, D_SIGMOID, SIZES);
+        int samples = 58168;
+        BufferedImage[] images = new BufferedImage[samples];
+        int[] digits = new int[samples];
+        File[] imagesFiles = new File(filePath).listFiles();
+        for (int i = 0; i < samples; i++) {
+            try {
+                images[i] = ImageIO.read(imagesFiles[i]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            digits[i] = Integer.parseInt(imagesFiles[i].getName().charAt(10) + "");
+        }
+
+        double[][] inputs = new double[samples][784];
+        for (int i = 0; i < samples; i++) {
+            for (int x = 0; x < 28; x++) {
+                for (int y = 0; y < 28; y++) {
+                    inputs[i][x + y * 28] = (images[i].getRGB(x, y) & 0xff) / 255.0;
+                }
+            }
+        }
+
+        int epochs = 100;
+        for (int i = 1; i < epochs; i++) {
+            int right = 0;
+            double errorSum = 0;
+            int batchSize = 100;
+            for (int j = 0; j < batchSize; j++) {
+                int imgIndex = (int) (Math.random() * samples);
+                double[] targets = new double[10];
+                int digit = digits[imgIndex];
+                targets[digit] = 1;
+
+                double[] outputs = nn.feedForward(inputs[imgIndex]);
+                int maxDigit = 0;
+                double maxDigitWeight = -1;
+                for (int k = 0; k < 10; k++) {
+                    if (outputs[k] > maxDigitWeight) {
+                        maxDigitWeight = outputs[k];
+                        maxDigit = k;
+                    }
+                }
+                if (digit == maxDigit) right++;
+                for (int k = 0; k < 10; k++) {
+                    errorSum += (targets[k] - outputs[k]) * (targets[k] - outputs[k]);
+                }
+                nn.backpropagation(targets);
+            }
+            log.info("epoch: " + i + ". correct: " + right + ". error: " + errorSum);
+        }
+        return nn;
+    }
 }
