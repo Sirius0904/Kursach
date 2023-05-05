@@ -7,15 +7,12 @@ import com.bsuir.sirius.exception.SiriusProcessingImageException;
 import com.bsuir.sirius.repository.*;
 import com.bsuir.sirius.to.mvc.request.*;
 import com.bsuir.sirius.to.mvc.response.*;
-import com.bsuir.sirius.to.rest.request.CommentTO;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +20,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
@@ -55,6 +50,8 @@ public class UserService {
     private final ImageDataRepository imageDataRepository;
     private final WalletRepository walletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
+
+    private final ImageValidatorService imageValidatorService;
 
     private final AnalyzerService analyzerService;
 
@@ -316,10 +313,11 @@ public class UserService {
             Files.createDirectories(uploadPath);
         }
         try (InputStream inputStream = request.getImage().getInputStream()) {
+            imageValidatorService.validateAndCache(ImageIO.read(new ByteArrayInputStream(request.getImage().getBytes())));
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            log.info("feeding image");
-            if (analyzerService.feedImage(request.getImage().getBytes()) == 4) {
+            log.info("Forwarding image into NN");
+            if (analyzerService.forwardImageBytes(request.getImage().getBytes()) == 4) {
                 throw new SiriusProcessingImageException("Image not allowed", "Image contains '4'");
             }
             imageData.setPath(filePath.toString());

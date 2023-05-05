@@ -13,18 +13,9 @@ import com.bsuir.sirius.to.rest.request.AnalyzeImageTO;
 import com.bsuir.sirius.to.rest.request.CommentTO;
 import com.bsuir.sirius.to.rest.response.AnalyzeImageResponseTO;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -70,6 +61,6 @@ public class SiriusRestController {
         //ImageIO.write(scaledImage, "PNG", new File("D:/image.png"));
 
 
-        return new AnalyzeImageResponseTO(analyzerService.feedImage(imageBytes));
+        return new AnalyzeImageResponseTO(analyzerService.forwardImageBytes(imageBytes));
     }
 }

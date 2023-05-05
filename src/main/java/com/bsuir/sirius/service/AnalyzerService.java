@@ -13,7 +13,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AnalyzerService {
     private NeuralNetwork nn;
-
 
     @PostConstruct
     public void init() throws IOException {
@@ -55,7 +53,7 @@ public class AnalyzerService {
 
     }
 
-    public Integer feedImage(byte[] bytes) {
+    public Integer forwardImageBytes(byte[] bytes) {
         BufferedImage img = null;
         try {
             img = ImageIO.read(new ByteArrayInputStream(bytes));
