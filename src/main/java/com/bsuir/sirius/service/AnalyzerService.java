@@ -39,7 +39,7 @@ public class AnalyzerService {
             }
             log.info("Layers file not detected, learning initialized");
 
-            nn = NeuralNetwork.learnAndInit("C:/Users/dark/Desktop/train");
+            nn = NeuralNetwork.learnAndInit("D:train");
 
             try {
                 log.info("Saving data");
