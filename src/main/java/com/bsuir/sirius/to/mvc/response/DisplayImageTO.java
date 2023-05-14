@@ -21,7 +21,6 @@ public class DisplayImageTO {
     private String authorImagePath;
     private String description;
     private String author;
-    private Integer likes;
     private BigDecimal price;
     private Boolean isSellable;
     private Boolean isOwner;

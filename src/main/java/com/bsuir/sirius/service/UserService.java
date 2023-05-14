@@ -12,6 +12,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -56,6 +58,35 @@ public class UserService {
     private final AnalyzerService analyzerService;
 
 
+    @SneakyThrows
+    @PostConstruct
+    public void init() {
+        if (roleRepository.findAll().isEmpty()) {
+            log.info("Roles DB is not initialized, initing database with default data");
+
+            Role admin = new Role().setName("ADMIN");
+            Role user = new Role().setName("USER");
+
+            roleRepository.saveAll(List.of(admin, user));
+            roleRepository.flush();
+
+            log.info("Initialized roles {}", List.of(admin, user));
+        }
+
+        if (userRepository.findAll().isEmpty()) {
+            log.info("Users DB is not initialized, initing database with default data");
+            String username = "admin";
+            String pwd = "admin";
+            String email = "admin@sirius.com";
+            this.registerUser(new RegisterUserRequestTO(username, pwd, pwd, email));
+
+            User user = userRepository.getUserByUsername(username).setRoles(Set.of(roleRepository.getRoleByName("ADMIN")));
+            userRepository.saveAndFlush(user);
+
+            log.info("Initialized user {}", user);
+        }
+    }
+
     /*
      * Поиск пользователя в бд по юзернейму
      *
@@ -84,7 +115,7 @@ public class UserService {
 
 
         Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.getOne(1));
+        roles.add(roleRepository.getRoleByName("USER"));
 
         user.setRoles(roles);
         user.setPassword(encoder.encode(request.getPassword()));
@@ -349,7 +380,6 @@ public class UserService {
                         image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
                         image.getDescription(),
                         image.getOwner().getFirstName() + " " + image.getOwner().getLastName(),
-                        image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
                         false,
@@ -366,7 +396,6 @@ public class UserService {
                         user.getUserData().getProfileImage() == null ? "" : "\\" + user.getUserData().getProfileImage().getPath(),
                         image.getDescription(),
                         user.getUsername(),
-                        image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
                         true,
@@ -390,7 +419,6 @@ public class UserService {
                 image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
                 image.getDescription(),
                 image.getOwner().getBaseUser().getUsername(),
-                image.getLikeCount(),
                 image.getPrice(),
                 image.getIsSellable(),
                 username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername()),
@@ -568,7 +596,6 @@ public class UserService {
                         image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
                         image.getDescription(),
                         image.getOwner().getBaseUser().getUsername(),
-                        image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
                         username.equalsIgnoreCase(image.getOwner().getBaseUser().getUsername()),
@@ -584,7 +611,6 @@ public class UserService {
                         image.getOwner().getProfileImage() == null ? "" : "\\" + image.getOwner().getProfileImage().getPath(),
                         image.getDescription(),
                         image.getOwner().getBaseUser().getUsername(),
-                        image.getLikeCount(),
                         image.getPrice(),
                         image.getIsSellable(),
                         false,

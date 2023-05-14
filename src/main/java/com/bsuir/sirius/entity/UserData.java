@@ -33,9 +33,6 @@ public class UserData {
     @OneToOne
     private ImageData profileImage;
 
-    @OneToMany
-    private Set<Image> likedImages = new HashSet<>();
-
     @OneToOne(mappedBy = "userData")
     private User baseUser;
 

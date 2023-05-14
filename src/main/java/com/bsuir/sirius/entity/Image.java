@@ -24,8 +24,6 @@ public class Image {
 
     private BigDecimal price;
 
-    private Integer likeCount = 0;
-
     private String description;
 
     @OneToOne
