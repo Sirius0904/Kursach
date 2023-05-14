@@ -67,35 +67,33 @@
                 <div class="bg-white rounded overflow-hidden">
 
                     <div class="px-4 pt-1 pb-1 cover">
-
                     </div>
                     <div class="row bg-light">
-                        <div class="bg-light p-4  text-center col-lg-8">
-                            <div class="mb-0">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">Username</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Wallet</th>
-                                        <th scope="col">Balance</th>
-                                        <th scope="col">Transactions(json)</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody th:each="user : ${users}">
-                                    <tr>
-                                        <th scope="row" th:text="${user.username}"></th>
-                                        <td th:text="${user.email}"></td>
-                                        <td th:text="${user.wallet}"></td>
-                                        <td th:text="${user.balance}"></td>
-                                        <td> <a th:href="'/admin/transactions/' + ${user.username}">Link</a></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="bg-light p-4 text-center" style="min-height: 600px; max-height: 800px; overflow-y: auto">
+
+                            <table class="table" style="width: 100%">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Wallet</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Transactions(json)</th>
+                                </tr>
+                                </thead>
+                                <tbody th:each="user : ${users}">
+                                <tr>
+                                    <th scope="row" th:text="${user.username}"></th>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${user.wallet}"></td>
+                                    <td th:text="${user.balance}"></td>
+                                    <td><a th:href="'/admin/transactions/' + ${user.username}">Link</a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
                         </div>
-                        <div class="bg-light p-4 d-flex  text-center col-lg-6 offset-1">
-                        </div>
+
                     </div>
                 </div>
             </div>
