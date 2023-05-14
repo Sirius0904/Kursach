@@ -1,9 +1,6 @@
 package com.bsuir.sirius.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -16,6 +13,7 @@ import java.util.Set;
 @Accessors(chain = true)
 @Getter
 @Setter
+@ToString
 public class Role {
     @Column(name = "ID")
     @Id

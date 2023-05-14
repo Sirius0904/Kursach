@@ -58,35 +58,6 @@ public class UserService {
     private final AnalyzerService analyzerService;
 
 
-    @SneakyThrows
-    @PostConstruct
-    public void init() {
-        if (roleRepository.findAll().isEmpty()) {
-            log.info("Roles DB is not initialized, initing database with default data");
-
-            Role admin = new Role().setName("ADMIN");
-            Role user = new Role().setName("USER");
-
-            roleRepository.saveAll(List.of(admin, user));
-            roleRepository.flush();
-
-            log.info("Initialized roles {}", List.of(admin, user));
-        }
-
-        if (userRepository.findAll().isEmpty()) {
-            log.info("Users DB is not initialized, initing database with default data");
-            String username = "admin";
-            String pwd = "admin";
-            String email = "admin@sirius.com";
-            this.registerUser(new RegisterUserRequestTO(username, pwd, pwd, email));
-
-            User user = userRepository.getUserByUsername(username).setRoles(Set.of(roleRepository.getRoleByName("ADMIN")));
-            userRepository.saveAndFlush(user);
-
-            log.info("Initialized user {}", user);
-        }
-    }
-
     /*
      * Поиск пользователя в бд по юзернейму
      *
@@ -113,11 +84,10 @@ public class UserService {
 
         User user = new User();
 
+        Role role = roleRepository.getRoleByNameIgnoreCase(userRepository.findAll().isEmpty() ? "ADMIN" : "USER");
+        log.info("Got role from repository: {}", role.toString());
 
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.getRoleByName("USER"));
-
-        user.setRoles(roles);
+        user.setRoles(Set.of(role));
         user.setPassword(encoder.encode(request.getPassword()));
         user.setUsername(request.getUsername());
 
