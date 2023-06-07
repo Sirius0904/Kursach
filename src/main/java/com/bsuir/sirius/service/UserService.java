@@ -525,7 +525,7 @@ public class UserService {
                 }
                 transaction.setBuyer(user.getUserData());
                 transaction.setAmount(amount);
-                wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
+                wallet.setBalance(wallet.getBalance().substract(transaction.getAmount()));
                 walletRepository.saveAndFlush(wallet);
                 transactionHistoryRepository.saveAndFlush(transaction);
         }
